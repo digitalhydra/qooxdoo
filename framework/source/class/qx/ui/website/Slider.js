@@ -1,5 +1,6 @@
 /**
  * @require(qx.module.event.Mouse)
+ * @require(qx.module.Transform)
  */
 qx.Bootstrap.define("qx.ui.website.Slider",
 {
@@ -22,17 +23,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   construct : function(selector, context) {
     this.base(arguments, selector, context);
 
-    var trs = qxWeb.env.get("css.transform");
-    this.__canTransform = (trs !== null && typeof trs === "object");
-    this.__canTransform3d = this.__canTransform ? trs["3d"] : false;
-
     if (this.length === 0) {
       return;
     }
-
-    //TODO: Make less horrible
-    var cancel = "event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;" +
-      "event.preventDefault ? event.preventDefault() : event.returnValue = false;";
 
     if (!this.hasListener("click", this._onClick)) {
       this.on("click", this._onClick, this);
@@ -56,14 +49,11 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       slider.getChildren(".qx-slider-knob")
       .setAttributes({
         "draggable": "false",
-        "ondragstart": cancel,
         "unselectable": "true"
       })
-      .on("mousedown", this._onMouseDown, this);
+      .on("mousedown", this._onMouseDown, this)
+      .on("dragstart", this._onDragStart, this);
     }.bind(this));
-
-    //TODO: clean up
-    this.currentIndex = null;
   },
 
 
@@ -82,9 +72,6 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   {
     __dragMode : null,
     __pixel : null,
-    __leftOffset : 0,
-    __canTransform3d : false,
-    __canTransform : false,
 
 
     /**
@@ -117,23 +104,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     },
 
 
-    /**
-     * Returns the current position of the slider. This method returns the same
-     * value as the {@link #changePosition} event.
-     *
-     * @return {Integer} position of the slider
-     */
-    getKnobPosition : function()
-    {
-      if(this.__canTransform3d || this.__canTransform)
-      {
-        this.getChildren(".qx-slider-knob").getStyle("transform").match(/matrix(3d)?\((.*?)\)/);
-        var transform = RegExp.$2.split(',');
-        transform = transform[12] || transform[4];
-        return parseInt(Number(transform), 10);
-      } else {
-        return parseInt(this.getChildren(".qx-slider-knob").getStyle("left"), 10);
-      }
+    render : function() {
+      this._getPixels(true);
     },
 
 
@@ -143,15 +115,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     },
 
 
-    /**
-     * Initializes caching values which are used to do a fast lookup whenever
-     * the slider knob get dragged.
-     */
     _getDragBoundaries : function()
     {
+      var offset = this.getConfig("offset");
       return {
-        min : this.getOffset().left + this.getConfig("offset"),
-        max : this.getOffset().left + this.getWidth() - this.getConfig("offset")
+        min : this.getOffset().left + offset,
+        max : this.getOffset().left + this.getWidth() - offset
       };
     },
 
@@ -180,7 +149,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       var lastIndex = steps.length-1;
 
-      //The width realy used by the slider (drag area)
+      //The width really used by the slider (drag area)
       var usedWidth = this.getWidth() - (this.getConfig("offset") * 2);
 
       //The width of a single slider step
@@ -219,8 +188,6 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       }
 
       currentIndex = Math.abs(position - before) <=  Math.abs(position - after) ? currentIndex : currentIndex + 1;
-
-      this.currentIndex = currentIndex;
 
       return this.getConfig("steps")[currentIndex];
     },
@@ -265,8 +232,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _onMouseUp : function(e)
     {
-      if (this.__dragMode === true)
-      {
+      if (this.__dragMode === true) {
         // Cleanup status flags
         delete this.__dragMode;
 
@@ -285,46 +251,43 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      *
      * @param e {qx.event.Emitter} Incoming event object
      */
-    _onMouseMove : function(e)
-    {
+    _onMouseMove : function(e) {
       e.preventDefault();
 
-
-      if (this.__dragMode)
-      {
+      if (this.__dragMode) {
         var dragPosition = e.getDocumentLeft();
         var dragBoundaries = this._getDragBoundaries();
-        if (dragPosition >= dragBoundaries.min && dragPosition <= dragBoundaries.max)
-        {
+        var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth();
+
+        if (dragPosition >= dragBoundaries.min && dragPosition <= dragBoundaries.max) {
           this.setValue(this.__getNearestValue(dragPosition));
-          var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth();
-          if (positionKnob > 0)
-          {
-            var trs = this.__getTransfrom(positionKnob);
-            this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
+          if (positionKnob > 0) {
+            this._setKnobPosition(positionKnob);
             this.emit("changePosition", positionKnob);
           }
         }
       }
-      // Stop event
+
       e.stopPropagation();
     },
 
 
+    _onDragStart : function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
+
+
     /**
-    * Determines the best possibility for an horizontal translation
+    * Applies the horizontal position
     * @param x {Integer} the position to move to
-    * @return {Map} A map containing the appropriate style property(transform/teft) and it's value
     */
-    __getTransfrom : function(x) {
-      if(this.__canTransform3d) {
-        x -= this.__leftOffset;
-        return {left:"transform", value : "translate3d("+x+"px,0px,0px)"};
-      } else if(this.__canTransform) {
-        x -= this.__leftOffset;
-        return {left:"transform", value : "translate("+x+"px,0px)"};
+    _setKnobPosition : function(x) {
+      var knob = this.getChildren(".qx-slider-knob");
+      if (qxWeb.env.get("css.transform")) {
+        knob.translate([x + "px", 0, 0]);
       } else {
-        return {left:"left",value : x+"px"};
+        knob.setStyle("left", x + "px");
       }
     },
 
@@ -335,15 +298,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _onWindowResize : function()
     {
-      var pixels = this._getPixels(true);
-
-      // Update the position of the slider knob
-      if(this.currentIndex){
-        var positionKnob = pixels[this.currentIndex] - this.getOffset().left - this._getHalfKnobWidth();
-        var trs = this.__getTransfrom(positionKnob);
-        this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
-        //this.getChildren(".qx-slider-knob").setStyle("left", positionKnob+"px");
-      }
+      var value = this.getProperty("value");
+      this._getPixels(true);
+      this.__valueToPosition(value);
     },
 
 
@@ -356,14 +313,11 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     __valueToPosition : function(value)
     {
       // Get the pixel value of the current step value
-
       var valueToPixel = this._getPixels()[this.getConfig("steps").indexOf(value)];
 
       // relative position is necessary here
       var position = valueToPixel - this.getOffset().left - this._getHalfKnobWidth();
-
-      var trs = this.__getTransfrom(position);
-      this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
+      this._setKnobPosition(position);
 
       this.emit("changePosition", position);
     },
@@ -382,7 +336,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   },
 
 
-  // Make the slider widget as qxWeb module available
+  // Make the slider widget available as a qxWeb module
   defer : function(statics) {
     qxWeb.$attach({
       slider : function(value, steps) {

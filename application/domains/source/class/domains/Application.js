@@ -167,7 +167,7 @@ qx.Class.define("domains.Application",
       q("#slider").setStyle("display", "block");
       q("#slider").slider(30, [10,20,30,40]).on("changeValue", function(e) {
         q("#slider .qx-slider-knob").setHtml(e + "");
-      });
+      }).setConfig("offset", 100).render();
       q("#slider .qx-slider-knob").setHtml("30");
 
 
