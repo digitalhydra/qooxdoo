@@ -3466,3 +3466,42 @@ testrunner.define({
     this.assertEquals(now, c1.getValue());
   }
 });
+
+testrunner.define({
+  classname: "ui.Slider",
+
+  setUp : testrunner.globalSetup,
+  tearDown : testrunner.globalTeardown,
+
+  testPlainConstructor : function() {
+    var slider = q("#sandbox").slider();
+    this.assertTrue(slider.hasClass("qx-slider"));
+    this.assertEquals(1, slider.getChildren().length);
+    this.assertTrue(slider.getChildren().eq(0).hasClass("qx-slider-knob"));
+  },
+
+  testFullConstructor : function() {
+    var slider = q("#sandbox").slider(10);
+    this.assertEquals(10, slider.getValue());
+    this.assertEquals(0, slider.getConfig("minimum"));
+    this.assertEquals(100, slider.getConfig("maximum"));
+  },
+
+  testSetGetValue : function() {
+    var slider = q("#sandbox").slider();
+    this.assertEquals(0, slider.getValue());
+    slider.setValue(30);
+    this.assertEquals(30, slider.getValue());
+  },
+
+  testGivenKnob : function() {
+    var knob = q.create("<div class='qx-slider-knob test-class'>").appendTo("#sandbox");
+    var extra = q.create("<h2>Hello</h2>").appendTo("#sandbox");
+    var slider = q("#sandbox").slider();
+    this.assertTrue(slider.hasClass("qx-slider"));
+    this.assertEquals(2, slider.getChildren().length);
+    this.assertEquals(1, slider.getChildren(".test-class").length);
+    this.assertEquals(knob[0], slider.getChildren(".test-class")[0]);
+    this.assertEquals(1, slider.getChildren("h2").length);
+  }
+});

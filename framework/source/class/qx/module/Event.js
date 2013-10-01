@@ -254,15 +254,19 @@ qx.Bootstrap.define("qx.module.Event", {
      *
      * @attach {qxWeb}
      * @param type {String} Event type, e.g. <code>mousedown</code>
+     * @param type {Function?} Event listener to check for.
      * @return {Boolean} <code>true</code> if one or more listeners are attached
      */
-    hasListener : function(type) {
+    hasListener : function(type, listener) {
       if (!this[0] || !this[0].__emitter ||
         !this[0].__emitter.getListeners()[type])
       {
         return false;
       }
 
+      if (listener) {
+        return this[0].__emitter.getListeners()[type].indexOf(listener) != -1;
+      }
       return this[0].__emitter.getListeners()[type].length > 0;
     },
 
@@ -380,14 +384,14 @@ qx.Bootstrap.define("qx.module.Event", {
 
 
     /**
-     * Bind one or two callbacks to the collection. 
+     * Bind one or two callbacks to the collection.
      * If only the first callback is defined the collection
      * does react on 'mouseover' only.
      *
      * @attach {qxWeb}
      *
-     * @param callbackIn {Function} callback when hovering over 
-     * @param callbackOut {Function?} callback when hovering out 
+     * @param callbackIn {Function} callback when hovering over
+     * @param callbackOut {Function?} callback when hovering out
      * @return {qxWeb} The collection for chaining
      */
     hover : function(callbackIn, callbackOut) {

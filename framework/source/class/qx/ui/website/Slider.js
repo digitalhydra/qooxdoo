@@ -5,14 +5,64 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 {
   extend : qx.ui.website.Widget,
 
+  statics : {
+    _config : {
+      minimum : 0,
+      maximum : 100,
+      offset : 0,
+      steps : null
+    },
+
+    _templates : {
+      knob : "<div>"
+    }
+  },
+
 
   construct : function(selector, context) {
-    this.base(arguments, selector, context)
+    this.base(arguments, selector, context);
 
     var trs = qxWeb.env.get("css.transform");
     this.__canTransform = (trs !== null && typeof trs === "object");
     this.__canTransform3d = this.__canTransform ? trs["3d"] : false;
 
+    if (this.length === 0) {
+      return;
+    }
+
+    //TODO: Make less horrible
+    var cancel = "event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;" +
+      "event.preventDefault ? event.preventDefault() : event.returnValue = false;";
+
+    if (!this.hasListener("click", this._onClick)) {
+      this.on("click", this._onClick, this);
+      this.setProperty("qx-slider-context", this);
+    }
+
+    var doc = qxWeb(document.documentElement);
+    if (!doc.hasListener("mouseup", this._onMouseUp)) {
+      doc.on("mouseup", this._onMouseUp, this);
+    }
+
+    qxWeb(window).on("resize", this._onWindowResize, this);
+
+    this._forEachElement(function(slider) {
+      slider = qxWeb(slider).addClass("qx-slider");
+      if (slider.getChildren(".qx-slider-knob").length === 0) {
+        qx.ui.website.Widget.create(this.getTemplate("knob"))
+        .addClass("qx-slider-knob")
+        .appendTo(slider);
+      }
+      slider.getChildren(".qx-slider-knob")
+      .setAttributes({
+        "draggable": "false",
+        "ondragstart": cancel,
+        "unselectable": "true"
+      })
+      .on("mousedown", this._onMouseDown, this);
+    }.bind(this));
+
+    //TODO: clean up
     this.currentIndex = null;
   },
 
@@ -30,34 +80,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
   members :
   {
-    __documentElement : null,
-    __sliderWidth : null,
-    __dragMin : null,
-    __knobElement : null,
-    __halfKnobWidth : null,
     __dragMode : null,
-    __dragMax : null,
-    __offset : null,
-    __body : null,
-    __nextStepInPixel : null,
-    __steps : null,
-    __increment : null,
     __pixel : null,
-    __sliderPositionLeft : null,
     __leftOffset : 0,
     __canTransform3d : false,
     __canTransform : false,
 
-    /*
-    ---------------------------------------------------------------------------
-      PUBLIC API
-    ---------------------------------------------------------------------------
-    */
-
-    /**
-     * The current slider value.
-     */
-    __value : null,
 
     /**
      * Returns the current value of the slider
@@ -65,7 +93,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      * @return {Integer} slider value
      */
     getValue : function() {
-      return this.__value;
+      return this.getProperty("value");
     },
 
     /**
@@ -79,9 +107,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         throw Error("Please provide a Number value for 'value'!");
       }
 
-      this.__value = value;
+      this.setProperty("value", value);
 
-      if (this.__steps.indexOf(value) != -1) {
+      //TODO value not in steps
+      if (this.getConfig("steps").indexOf(value) != -1) {
         this.__valueToPosition(value);
         this.emit("changeValue", value);
       }
@@ -94,75 +123,23 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      *
      * @return {Integer} position of the slider
      */
-    getPosition : function()
+    getKnobPosition : function()
     {
       if(this.__canTransform3d || this.__canTransform)
       {
-        this.__knobElement.getStyle("transform").match(/matrix(3d)?\((.*?)\)/);
+        this.getChildren(".qx-slider-knob").getStyle("transform").match(/matrix(3d)?\((.*?)\)/);
         var transform = RegExp.$2.split(',');
         transform = transform[12] || transform[4];
         return parseInt(Number(transform), 10);
       } else {
-        return parseInt(this.__knobElement.getStyle("left"), 10);
+        return parseInt(this.getChildren(".qx-slider-knob").getStyle("left"), 10);
       }
     },
 
 
-    /*
-    ---------------------------------------------------------------------------
-      INITIALIZATION
-    ---------------------------------------------------------------------------
-    */
-
-    _setOffset : function(offset) {
-      if (offset) {
-        this.__offset = parseInt(offset, 10);
-      } else {
-        this.__offset = 0;
-      }
-    },
-
-
-    _setupElements : function(sliderElement, knobElement) {
-      this.__knobElement = knobElement;
-
-      if (qxWeb.env.get("event.mspointer")) {
-        knobElement.setStyle("-ms-touch-action", "pan-x");
-      }
-
-      this.__documentElement = this.__knobElement.getAncestors().find("html");
-
-      this.__leftOffset = parseInt(this.__knobElement.getStyle("left")) || 0;
-
-      this.__setupSlider();
-    },
-
-
-
-    /**
-     * Retrieves basic infos like width of slider and knob element.
-     *
-     * * Sets both elements to "unselectable" to prevent native dragging.
-     * * Gets the left and right position of the slider element for later computation.
-     * * Sets a backgroumdImage to be able to dragging the knob element.
-     * * Setup the event listeners.
-     */
-    __setupSlider : function()
-    {
-      var cancel = "event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;" +
-        "event.preventDefault ? event.preventDefault() : event.returnValue = false;";
-
-      this.__initCacheValues();
-
-      this.__knobElement.setAttribute("draggable", "false");
-      this.__knobElement.setAttribute("ondragstart", cancel);
-      this.__knobElement.setAttribute("unselectable", "true");
-
-      this.setAttribute("draggable", "false");
-      this.setAttribute("ondragstart", cancel);
-      this.setAttribute("unselectable", "true");
-
-      this.__addListeners();
+    _getHalfKnobWidth : function() {
+      var knobWidth = this.getChildren(".qx-slider-knob").getWidth();
+      return parseInt(knobWidth / 2, 10);
     },
 
 
@@ -170,37 +147,41 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      * Initializes caching values which are used to do a fast lookup whenever
      * the slider knob get dragged.
      */
-    __initCacheValues : function()
+    _getDragBoundaries : function()
     {
-      this.__sliderWidth = this.getWidth();
-      this.__sliderPositionLeft = this.getOffset().left;
-
-      var knobWidth = this.__knobElement.getWidth();
-      this.__halfKnobWidth = parseInt(knobWidth / 2, 10);
-
-      this.__dragMin = this.__sliderPositionLeft + this.__offset;
-      this.__dragMax = this.__sliderPositionLeft + this.__sliderWidth - this.__offset;
+      return {
+        min : this.getOffset().left + this.getConfig("offset"),
+        max : this.getOffset().left + this.getWidth() - this.getConfig("offset")
+      };
     },
 
 
     /**
      * Creates a lookup table to get the pixel values for each slider step.
      * And computes the "breakpoint" between two steps in pixel.
-     *
-     * @param steps {Array} Configured steps of the slider
      */
-    __initSteps : function(steps)
+    _getPixels : function(refresh)
     {
-      this.__steps = steps;
+      if (this.__pixel && !refresh) {
+        return this.__pixel;
+      }
+
+      var steps = this.getConfig("steps");
+      if (!steps) {
+        return [];
+      }
+
+      var dragBoundaries = this._getDragBoundaries();
+
       this.__pixel = [];
 
       // First pixel value is fixed
-      this.__pixel.push(this.__dragMin);
+      this.__pixel.push(dragBoundaries.min);
 
       var lastIndex = steps.length-1;
 
       //The width realy used by the slider (drag area)
-      var usedWidth = this.__sliderWidth - (this.__offset * 2);
+      var usedWidth = this.getWidth() - (this.getConfig("offset") * 2);
 
       //The width of a single slider step
       var stepWidth = usedWidth/(steps[lastIndex]-steps[0]);
@@ -209,47 +190,29 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       for(var i=1, j=steps.length-1; i<j; i++){
         stepCount = steps[i] - steps[0];
-        this.__pixel.push(Math.round(stepCount*stepWidth) + this.__dragMin);
+        this.__pixel.push(Math.round(stepCount*stepWidth) + dragBoundaries.min);
       }
 
       // Last pixel value is fixed
-      this.__pixel.push(this.__dragMax);
+      this.__pixel.push(dragBoundaries.max);
 
+      return this.__pixel;
     },
 
-
-    /**
-     * Event listener for slider, knob and body element to enable the drag and
-     * click events for the slider.
-     */
-    __addListeners : function()
-    {
-      this.on("click", this._onClick, this);
-
-
-      // TODO create a device-independent event processing
-      // this.__knobElement.on(q.DeviceInfo.EVENT.start, this._onMouseDown, this);
-      // this.__documentElement.on(q.DeviceInfo.EVENT.end, this._onMouseUp, this);
-
-      this.__knobElement.on("mousedown", this._onMouseDown, this);
-      this.__documentElement.on("mouseup", this._onMouseUp, this);
-
-      qxWeb(window).on("resize", this._onWindowResize, this);
-    },
 
     /**
     * Returns the nearest existing slider value according to he position of the knob element.
     * @param position {Integer} The current knob position in pixels
     * @return {Integer} The next position to snap to
     */
-    __getCurrentValue : function(position){
-      var currentIndex = 0,before = 0,after = 0;
-      for (var i=0, j=this.__pixel.length; i<j; i++)
-      {
-        if (position >= this.__pixel[i]) {
+    __getNearestValue : function(position) {
+      var pixels = this._getPixels();
+      var currentIndex = 0, before = 0, after = 0;
+      for (var i=0, j=pixels.length; i<j; i++) {
+        if (position >= pixels[i]) {
           currentIndex = i;
-          before = this.__pixel[i];
-          after = this.__pixel[i+1] || before;
+          before = pixels[i];
+          after = pixels[i+1] || before;
         } else {
           break;
         }
@@ -259,26 +222,17 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       this.currentIndex = currentIndex;
 
-      return this.__steps[currentIndex];
+      return this.getConfig("steps")[currentIndex];
     },
 
-
-    /*
-    ---------------------------------------------------------------------------
-      EVENT HANDLER
-    ---------------------------------------------------------------------------
-    */
 
     /**
      * Takes the click position and sets slider value to the nearest step.
      *
      * @param e {qx.event.Emitter} Incoming event object
      */
-    _onClick : function(e)
-    {
-
-      var clickPosition =  e.getDocumentLeft ? e.getDocumentLeft() : e.changedTouches[0].pageX;
-      this.setValue(this.__getCurrentValue(clickPosition));
+    _onClick : function(e) {
+      this.setValue(this.__getNearestValue(e.getDocumentLeft()));
     },
 
 
@@ -287,8 +241,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      *
      * @param e {qx.event.Emitter} Incoming event object
      */
-    _onMouseDown : function(e)
-    {
+    _onMouseDown : function(e) {
       // this can happen if the user releases the button while dragging outside
       // of the browser viewport
       if (this.__dragMode) {
@@ -297,12 +250,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       this.__dragMode = true;
 
-      // TODO create a device-independent event processing
-      // this.__documentElement.on(q.DeviceInfo.EVENT.move, this._onMouseMove, this);
-
-      this.__documentElement.on("mousemove", this._onMouseMove, this);
-
-      this.__documentElement.setStyle("cursor", "pointer");
+      qxWeb(document.documentElement).on("mousemove", this._onMouseMove, this)
+      .setStyle("cursor", "pointer");
 
       e.stopPropagation();
     },
@@ -316,27 +265,18 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _onMouseUp : function(e)
     {
-      // TODO create a device-independent event processing
-      // if (e.type === q.DeviceInfo.EVENT.end)
-
-      if (e.type === "mouseup")
+      if (this.__dragMode === true)
       {
-        if (this.__dragMode === true)
-        {
-          // Cleanup status flags
-          delete this.__dragMode;
+        // Cleanup status flags
+        delete this.__dragMode;
 
-          this.__valueToPosition(this.getValue());
+        this.__valueToPosition(this.getValue());
 
-          // TODO create a device-independent event processing
-          // this.__documentElement.off(q.DeviceInfo.EVENT.move, this._onMouseMove, this);
-
-          this.__documentElement.off("mousemove", this._onMouseMove, this);
-          this.__documentElement.setStyle("cursor", null);
-        }
-
-        e.stopPropagation();
+        qxWeb(document.documentElement).off("mousemove", this._onMouseMove, this)
+        .setStyle("cursor", null);
       }
+
+      e.stopPropagation();
     },
 
 
@@ -349,17 +289,19 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     {
       e.preventDefault();
 
+
       if (this.__dragMode)
       {
         var dragPosition = e.getDocumentLeft();
-        if (dragPosition >= this.__dragMin && dragPosition <= this.__dragMax)
+        var dragBoundaries = this._getDragBoundaries();
+        if (dragPosition >= dragBoundaries.min && dragPosition <= dragBoundaries.max)
         {
-          this.setValue(this.__getCurrentValue(dragPosition));
-          var positionKnob = dragPosition - this.getOffset().left - this.__halfKnobWidth;
+          this.setValue(this.__getNearestValue(dragPosition));
+          var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth();
           if (positionKnob > 0)
           {
             var trs = this.__getTransfrom(positionKnob);
-            this.__knobElement.setStyle(trs.left,trs.value);
+            this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
             this.emit("changePosition", positionKnob);
           }
         }
@@ -368,19 +310,20 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       e.stopPropagation();
     },
 
+
     /**
     * Determines the best possibility for an horizontal translation
     * @param x {Integer} the position to move to
     * @return {Map} A map containing the appropriate style property(transform/teft) and it's value
     */
-    __getTransfrom : function(x){
-      if(this.__canTransform3d){
+    __getTransfrom : function(x) {
+      if(this.__canTransform3d) {
         x -= this.__leftOffset;
-        return {left:"transform",value : "translate3d("+x+"px,0px,0px)"};
-      }else if(this.__canTransform){
+        return {left:"transform", value : "translate3d("+x+"px,0px,0px)"};
+      } else if(this.__canTransform) {
         x -= this.__leftOffset;
-        return {left:"transform",value : "translate("+x+"px,0px)"};
-      }else{
+        return {left:"transform", value : "translate("+x+"px,0px)"};
+      } else {
         return {left:"left",value : x+"px"};
       }
     },
@@ -392,24 +335,17 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _onWindowResize : function()
     {
-      this.__initCacheValues();
-      this.__initSteps(this.__steps);
+      var pixels = this._getPixels(true);
 
       // Update the position of the slider knob
       if(this.currentIndex){
-        var positionKnob = this.__pixel[this.currentIndex] - this.getOffset().left - this.__halfKnobWidth;
+        var positionKnob = pixels[this.currentIndex] - this.getOffset().left - this._getHalfKnobWidth();
         var trs = this.__getTransfrom(positionKnob);
-        this.__knobElement.setStyle(trs.left,trs.value);
-        //this.__knobElement.setStyle("left", positionKnob+"px");
+        this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
+        //this.getChildren(".qx-slider-knob").setStyle("left", positionKnob+"px");
       }
     },
 
-
-    /*
-    ---------------------------------------------------------------------------
-      VALUE HANDLING
-    ---------------------------------------------------------------------------
-    */
 
     /**
      * Positions the slider knob to the given value and fires the "changePosition"
@@ -421,15 +357,27 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     {
       // Get the pixel value of the current step value
 
-      var valueToPixel = this.__pixel[this.__steps.indexOf(value)];
+      var valueToPixel = this._getPixels()[this.getConfig("steps").indexOf(value)];
 
       // relative position is necessary here
-      var position = valueToPixel - this.__sliderPositionLeft - this.__halfKnobWidth;
+      var position = valueToPixel - this.getOffset().left - this._getHalfKnobWidth();
 
       var trs = this.__getTransfrom(position);
-      this.__knobElement.setStyle(trs.left,trs.value);
+      this.getChildren(".qx-slider-knob").setStyle(trs.left,trs.value);
 
       this.emit("changePosition", position);
+    },
+
+
+    dispose : function()
+    {
+      var ctx = this.getProperty("qx-slider-context");
+      ctx.off("click", ctx._onClick, ctx);
+
+      ctx.getChildren(".qx-slider-knob").off("mousedown", ctx._onMouseDown, ctx);
+      qxWeb(document.documentElement).off("mouseup", ctx._onMouseUp, ctx);
+
+      qxWeb(window).off("resize", ctx._onWindowResize, ctx);
     }
   },
 
@@ -437,34 +385,17 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   // Make the slider widget as qxWeb module available
   defer : function(statics) {
     qxWeb.$attach({
-      slider : function(knobElement, steps, offset) {
+      slider : function(value, steps) {
         var slider = new qx.ui.website.Slider(this);
-
-        slider._setOffset(offset);
-        slider._setupElements(this, knobElement);
-        slider.__initSteps(steps);
-        slider.setValue(steps[0]);
+        if (typeof steps !== "undefined") {
+          slider.setConfig("steps", steps);
+        }
+        if (typeof value !== "undefined") {
+          slider.setValue(value);
+        }
 
         return slider;
       }
     });
-  },
-
-
-  destruct : function()
-  {
-    this.off("click", this._onClick, this);
-
-    // TODO create a device-independent event processing
-    // this.__knobElement.off(q.DeviceInfo.EVENT.start, this._onMouseDown, this);
-    // this.__documentElement.off(q.DeviceInfo.EVENT.end, this._onMouseUp, this);
-
-    this.__knobElement.off("mousedown", this._onMouseDown, this);
-    this.__documentElement.off("mouseup", this._onMouseUp, this);
-
-    qxWeb(window).off("resize", this._onWindowResize, this);
-
-    this.__knobElement = null;
-    this.__documentElement = null;
   }
 });
