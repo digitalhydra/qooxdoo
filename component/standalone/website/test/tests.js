@@ -1663,6 +1663,35 @@ testrunner.define({
     this.assertFalse(test.hasListener("mousedown"));
   },
 
+  testHasListenerWithHandler : function() {
+    var test = q.create('<div></div>').appendTo("#sandbox");
+    var cb = function() {};
+    test.on("mousedown", cb);
+    this.assertTrue(test.hasListener("mousedown", cb));
+    this.assertFalse(test.hasListener("mousedown", function() {}));
+    test.off("mousedown", cb);
+    this.assertFalse(test.hasListener("mousedown", cb));
+
+    var ctx = {};
+    test.on("mousedown", cb, ctx);
+    this.assertTrue(test.hasListener("mousedown", cb));
+    this.assertFalse(test.hasListener("mousedown", function() {}));
+    test.off("mousedown", cb, ctx);
+    this.assertFalse(test.hasListener("mousedown", cb));
+  },
+
+  testHasListenerWithContext : function() {
+    var test = q.create('<div></div>').appendTo("#sandbox");
+    var cb = function() {};
+    var ctx = {};
+
+    test.on("mousedown", cb, ctx);
+    this.assertTrue(test.hasListener("mousedown", cb, ctx));
+    this.assertFalse(test.hasListener("mousedown", cb, {}));
+    test.off("mousedown", cb, ctx);
+    this.assertFalse(test.hasListener("mousedown", cb, ctx));
+  },
+
   testContext : function()
   {
     window.temp = null;

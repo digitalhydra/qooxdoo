@@ -257,7 +257,7 @@ qx.Bootstrap.define("qx.module.Event", {
      * @param type {Function?} Event listener to check for.
      * @return {Boolean} <code>true</code> if one or more listeners are attached
      */
-    hasListener : function(type, listener) {
+    hasListener : function(type, listener, context) {
       if (!this[0] || !this[0].__emitter ||
         !this[0].__emitter.getListeners()[type])
       {
@@ -265,7 +265,28 @@ qx.Bootstrap.define("qx.module.Event", {
       }
 
       if (listener) {
-        return this[0].__emitter.getListeners()[type].indexOf(listener) != -1;
+        var attachedListeners = this[0].__emitter.getListeners()[type];
+        for (var i = 0; i < attachedListeners.length; i++) {
+          var hasListener = false;
+          if (attachedListeners[i].listener == listener) {
+            hasListener = true;
+          }
+          if (attachedListeners[i].listener.original &&
+              attachedListeners[i].listener.original == listener) {
+            hasListener =  true;
+          }
+
+          if (hasListener) {
+            if (context !== undefined) {
+              if (attachedListeners[i].ctx === context) {
+                return true;
+              }
+            } else {
+              return true;
+            }
+          }
+        }
+        return false;
       }
       return this[0].__emitter.getListeners()[type].length > 0;
     },
