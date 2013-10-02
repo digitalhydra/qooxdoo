@@ -3542,7 +3542,16 @@ testrunner.define({
     this.assertEquals(1, slider.getChildren("h2").length);
   },
 
-  testTwoSlider : function() {
+  testSteps : function() {
+    var slider = q("#sandbox").slider().setConfig("steps", [1,2,4,8,16]).render();
+    this.assertEquals(1, slider.getValue());
+    slider.setValue(5);
+    this.assertEquals(4, slider.getValue());
+    slider.setValue(7);
+    this.assertEquals(8, slider.getValue());
+  },
+
+  testTwoSliders : function() {
     q.create("<div>").appendTo("#sandbox");
     q.create("<div>").appendTo("#sandbox");
     q("#sandbox").getChildren().slider();
@@ -3567,5 +3576,11 @@ testrunner.define({
     this.assertEquals("qx.ui.website.Slider", q("#sandbox").classname);
     q("#sandbox").setValue(10);
     this.assertEquals(10, q("#sandbox").getValue());
+  },
+
+  testOffset : function() {
+    var slider = q("#sandbox").slider().setConfig("offset", 20).render();
+    var knob = slider.getChildren(".qx-slider-knob");
+    this.assertEquals(20, knob.getPosition().left + (knob.getWidth() / 2));
   }
 });

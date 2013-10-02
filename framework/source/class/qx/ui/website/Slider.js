@@ -19,59 +19,56 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     }
   },
 
-
   construct : function(selector, context) {
-    this.base(arguments, selector, context);
-
-    if (this.length === 0) {
-      return;
-    }
-
-    if (!this.hasListener("click", this._onClick)) {
-      this.on("click", this._onClick, this);
-      this.setProperty("qx-slider-context", this);
-    }
-
-    var doc = qxWeb(document.documentElement);
-    if (!doc.hasListener("mouseup", this._onMouseUp)) {
-      doc.on("mouseup", this._onMouseUp, this);
-    }
-
-    qxWeb(window).on("resize", this._onWindowResize, this);
-
-    this._forEachElement(function(slider) {
-      slider = qxWeb(slider).addClass("qx-slider");
-      if (slider.getChildren(".qx-slider-knob").length === 0) {
-        qx.ui.website.Widget.create(this.getTemplate("knob"))
-        .addClass("qx-slider-knob")
-        .appendTo(slider);
-      }
-      slider.getChildren(".qx-slider-knob")
-      .setAttributes({
-        "draggable": "false",
-        "unselectable": "true"
-      })
-      .on("mousedown", this._onMouseDown, this)
-      .on("dragstart", this._onDragStart, this);
-    }.bind(this));
+     this.base(arguments, selector, context);
   },
-
 
   events :
   {
     /** Fired at each value change */
-    "changeValue" : "qx.event.Emitter",
+    "changeValue" : "Number",
 
     /** Fired with each mouse move event */
-   "changePosition" : "qx.event.Emitter"
+    "changePosition" : "Number"
   },
-
 
 
   members :
   {
     __dragMode : null,
     __pixel : null,
+
+
+    init : function() {
+      this.base(arguments);
+
+      if (this.length === 0) {
+        return;
+      }
+
+      this.addClass("qx-slider");
+
+      this._forEachElement(function(slider) {
+        slider = qxWeb(slider);
+
+        slider.onWidget("click", slider._onClick, slider);
+        qxWeb(document.documentElement).onWidget("mouseup", slider._onMouseUp, slider);
+        qxWeb(window).onWidget("resize", slider._onWindowResize, slider);
+
+        if (slider.getChildren(".qx-slider-knob").length === 0) {
+          slider.append(qx.ui.website.Widget.create(slider.getTemplate("knob"))
+          .addClass("qx-slider-knob"));
+        }
+
+        slider.getChildren(".qx-slider-knob")
+        .setAttributes({
+          "draggable": "false",
+          "unselectable": "true"
+        })
+        .onWidget("mousedown", slider._onMouseDown, slider)
+        .onWidget("dragstart", slider._onDragStart, slider);
+      });
+    },
 
 
     /**
@@ -230,8 +227,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      *
      * @param e {qx.event.Emitter} Incoming event object
      */
-    _onMouseUp : function(e)
-    {
+    _onMouseUp : function(e) {
       if (this.__dragMode === true) {
         // Cleanup status flags
         delete this.__dragMode;
@@ -296,8 +292,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      * Listener for window resize events. This listener method resets the
      * calculated values which are used to position the slider knob.
      */
-    _onWindowResize : function()
-    {
+    _onWindowResize : function() {
       var value = this.getProperty("value");
       this._getPixels(true);
       this.__valueToPosition(value);
@@ -325,13 +320,18 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
     dispose : function()
     {
-      var ctx = this.getProperty("qx-slider-context");
-      ctx.off("click", ctx._onClick, ctx);
+      this._forEachElement(function(slider) {
+        slider = qxWeb(slider);
 
-      ctx.getChildren(".qx-slider-knob").off("mousedown", ctx._onMouseDown, ctx);
-      qxWeb(document.documentElement).off("mouseup", ctx._onMouseUp, ctx);
+        slider.offWidget("click", slider._onClick, slider);
+        slider.getChildren(".qx-slider-knob").offWidget("mousedown", slider._onMouseDown, slider);
+        qxWeb(document.documentElement).offWidget("mouseup", slider._onMouseUp, slider);
+        qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
+      });
 
-      qxWeb(window).off("resize", ctx._onWindowResize, ctx);
+      this.setProperty("qx-slider-context", null);
+
+      this.base(arguments);
     }
   },
 

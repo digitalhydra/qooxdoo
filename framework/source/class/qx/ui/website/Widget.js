@@ -19,21 +19,65 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       return new qx.ui.website.Widget(qxWeb.create(html));
     },
 
-    _scroll : {}
+    /**
+     * TODOC
+     *
+     * @attach {qxWeb}
+     * @param type {String} Type of the event to listen for
+     * @param listener {Function} Listener callback
+     * @param context {Object?} Context the callback function will be executed in.
+     * Default: The element on which the listener was registered
+     * @return {qxWeb} The collection for chaining
+     */
+    onWidget : function(type, listener, ctx) {
+      var propertyName = ctx.classname.replace(/\./g, "-") + "-context";
+      if (!ctx.getProperty(propertyName)) {
+        ctx.setProperty(propertyName, ctx);
+      }
+      var originalCtx = ctx.getProperty(propertyName);
+
+      if (!ctx.hasListener(type, listener, originalCtx)) {
+        ctx.on(type, listener, originalCtx);
+      }
+
+      return this;
+    },
+
+    /**
+     * [offWidget description]
+     *
+     * @attach {qxWeb}
+     * @param  {[type]} type     [description]
+     * @param  {[type]} listener [description]
+     * @param  {[type]} ctx      [description]
+     * @return {[type]}          [description]
+     */
+    offWidget : function(type, listener, ctx) {
+      var propertyName = ctx.classname.replace(/\./g, "-") + "-context";
+      var originalCtx = ctx.getProperty(propertyName);
+      originalCtx.off(type, listener, originalCtx);
+
+      return this;
+    }
   },
 
 
   construct : function(selector, context) {
     var col = this.base(arguments, selector, context);
     Array.prototype.push.apply(this, Array.prototype.slice.call(col, 0, col.length));
-    this.setAttribute("qx-class", this.classname);
-    if (!this.hasClass("qx-widget")) {
-      this.addClass("qx-widget");
-    }
+    this.init();
   },
 
 
   members : {
+
+    init : function() {
+      this.setAttribute("qx-class", this.classname);
+      if (!this.hasClass("qx-widget")) {
+        this.addClass("qx-widget");
+      }
+    },
+
     setTemplate : function(name, template) {
       return this._setData("templates", name, template);
     },
@@ -103,6 +147,19 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
           qx.core.Environment.get("css.userselect.none"));
       }
       return this;
+    },
+
+
+    dispose : function() {
+      this.removeAttribute("qx-class");
+      this.removeClass("qx-widget");
     }
+  },
+
+  defer : function(statics) {
+    qxWeb.$attach({
+      onWidget : statics.onWidget,
+      offWidget : statics.offWidget
+    });
   }
 });
