@@ -13,9 +13,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
   construct : function(selector, context) {
     this.base(arguments, selector, context);
 
-    this._forEachElement(function(rating) {
-      rating = q(rating);
-
+    this._forEachElementWrapped(function(rating) {
       for (var i = 0; i < this.getConfig("length"); i++) {
         q.create("<span>" + this.getConfig("symbol") + "</span>").appendTo(rating);
       }
@@ -69,8 +67,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
     },
 
     dispose : function() {
-      this._forEachElement(function(rating) {
-        rating = qxWeb(rating);
+      this._forEachElementWrapped(function(rating) {
         rating.getChildren("span").offWidget("click", rating.__onClick, rating);
       });
       this.setHtml("");

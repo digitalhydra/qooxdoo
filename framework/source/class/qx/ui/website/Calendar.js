@@ -66,8 +66,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     showValue : function(value) {
       this.setProperty("shownValue", value);
 
-      this._forEachElement(function(item) {
-        item = qxWeb(item);
+      this._forEachElementWrapped(function(item) {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
@@ -75,8 +74,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
       this.setHtml(this._getTable(value));
 
-      this._forEachElement(function(item) {
-        item = qxWeb(item);
+      this._forEachElementWrapped(function(item) {
         item.find(".qx-calendar-prev").onWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").onWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").onWidget("click", this._selectDay, item);
@@ -168,8 +166,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     },
 
     dispose : function() {
-      this._forEachElement(function(item) {
-        item = qxWeb(item);
+      this._forEachElementWrapped(function(item) {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);

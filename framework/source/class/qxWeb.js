@@ -290,6 +290,22 @@ qx.Bootstrap.define("qxWeb", {
           func.apply(ctx || this, [this[i], i, this]);
         }
       }
+    },
+
+
+    /**
+     * Calls a function for each DOM element node in the collection. Each node is wrapped
+     * in a collection before the function is called.
+     *
+     * @param func {Function} Callback function. Will be called with three arguments:
+     * The element wrappend in a collection, the element's index within the collection and
+     * the collection itself.
+     * @param ctx {Object} The context for the callback function (default: The collection)
+     */
+    _forEachElementWrapped : function(func, ctx) {
+      this._forEachElement(function(item, idx, arr) {
+        func.apply(this, [qxWeb(item), idx, arr]);
+      }, ctx);
     }
   },
 

@@ -382,8 +382,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {qxWeb} The collection for chaining
      */
     hide : function() {
-      this._forEachElement(function(entry, idx) {
-        var item = this.eq(idx);
+      this._forEachElementWrapped(function(item) {
         var prevStyle = item.getStyle("display");
         if (prevStyle !== "none") {
           item[0].$$qPrevDisp = prevStyle;
@@ -405,8 +404,7 @@ qx.Bootstrap.define("qx.module.Css", {
      * @return {qxWeb} The collection for chaining
      */
     show : function() {
-      this._forEachElement(function(entry, idx) {
-        var item = this.eq(idx);
+      this._forEachElementWrapped(function(item) {
         var currentVal = item.getStyle("display");
         var prevVal = item[0].$$qPrevDisp;
         var newVal;

@@ -614,6 +614,28 @@ testrunner.define({
     }, this);
   },
 
+  testForEachElement : function() {
+    var test = q.create("<div/><h1/>").add(window);
+    var exec = 0;
+    test._forEachElement(function(item) {
+      exec++;
+      this.assertNotEquals(window, item);
+      this.assertEquals(1, item.nodeType);
+    }, this);
+    this.assertEquals(2, exec);
+
+    exec = 0;
+    test._forEachElementWrapped(function(item) {
+      exec++;
+      this.assertNotEquals(window, item);
+      this.assertNotEquals(window, item[0]);
+      this.assertInstance(item, qxWeb);
+      this.assertEquals(1, item[0].nodeType);
+      this.assertEquals(1, item.length);
+    }, this);
+    this.assertEquals(2, exec);
+  },
+
   testGetParents : function() {
     var test = q.create("<div id='testdiv'/>");
     test.appendTo(this.sandbox[0]);

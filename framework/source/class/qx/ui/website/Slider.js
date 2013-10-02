@@ -48,9 +48,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       this.addClass("qx-slider");
 
-      this._forEachElement(function(slider) {
-        slider = qxWeb(slider);
-
+      this._forEachElementWrapped(function(slider) {
         slider.onWidget("click", slider._onClick, slider);
         qxWeb(document.documentElement).onWidget("mouseup", slider._onMouseUp, slider);
         qxWeb(window).onWidget("resize", slider._onWindowResize, slider);
@@ -320,9 +318,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
     dispose : function()
     {
-      this._forEachElement(function(slider) {
-        slider = qxWeb(slider);
-
+      this._forEachElementWrapped(function(slider) {
         slider.offWidget("click", slider._onClick, slider);
         slider.getChildren(".qx-slider-knob")
         .offWidget("mousedown", slider._onMouseDown, slider)
