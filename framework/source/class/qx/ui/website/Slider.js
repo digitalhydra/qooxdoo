@@ -89,10 +89,22 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         throw Error("Please provide a Number value for 'value'!");
       }
 
-      this.setProperty("value", value);
+      if (!this.getConfig("steps")) {
+        var min = this.getConfig("minimum");
+        var max = this.getConfig("maximum");
+        if (value < min) {
+          value = min;
+        }
+        if (value > max) {
+          value = max;
+        }
+      }
 
-      //TODO value not in steps
-      if (this.getConfig("steps").indexOf(value) != -1) {
+
+      this.setProperty("value", value);
+      var steps = this.getConfig("steps");
+
+      if (!steps || steps.indexOf(value) != -1) {
         this.__valueToPosition(value);
         this.emit("changeValue", value);
       }
@@ -101,6 +113,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
     render : function() {
       this._getPixels(true);
+      this.setValue(this.getValue());
+      //TODO: update template
     },
 
 
@@ -171,6 +185,23 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     */
     __getNearestValue : function(position) {
       var pixels = this._getPixels();
+      if (pixels.length === 0) {
+        var dragBoundaries = this._getDragBoundaries();
+        var availableWidth = dragBoundaries.max - dragBoundaries.min;
+        var relativePosition = position - dragBoundaries.min;
+        var fraction = relativePosition / availableWidth;
+        var min = this.getConfig("minimum");
+        var max = this.getConfig("maximum");
+        var result = (max - min) * fraction + min;
+        if (result < min) {
+          result = min;
+        }
+        if (result > max) {
+          result = max;
+        }
+        return result;
+      }
+
       var currentIndex = 0, before = 0, after = 0;
       for (var i=0, j=pixels.length; i<j; i++) {
         if (position >= pixels[i]) {
@@ -305,8 +336,18 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     __valueToPosition : function(value)
     {
-      // Get the pixel value of the current step value
-      var valueToPixel = this._getPixels()[this.getConfig("steps").indexOf(value)];
+      var pixels = this._getPixels();
+      var valueToPixel;
+      if (pixels.length > 0) {
+        // Get the pixel value of the current step value
+        valueToPixel = pixels[this.getConfig("steps").indexOf(value)];
+      } else {
+        var dragBoundaries = this._getDragBoundaries();
+        var availableWidth = dragBoundaries.max - dragBoundaries.min;
+        var range = this.getConfig("maximum") - this.getConfig("minimum");
+        var fraction = (value - this.getConfig("minimum")) / range;
+        valueToPixel = (availableWidth * fraction) + dragBoundaries.min;
+      }
 
       // relative position is necessary here
       var position = valueToPixel - this.getOffset().left - this._getHalfKnobWidth();
