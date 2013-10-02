@@ -3324,6 +3324,13 @@ testrunner.define({
     var coll = qxWeb.create("<div>").setAttribute("data-qx-config-foo-bar", JSON.stringify(value));
     var w = new qxWeb.$$qx.ui.website.Widget(coll);
     this.assertArrayEquals(value, w.getConfig("fooBar"));
+  },
+
+  testDispose : function() {
+    var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    this.assertEquals("qx.ui.website.Widget", qxWeb("#sandbox").classname);
+    w.dispose();
+    this.assertEquals("qxWeb", qxWeb("#sandbox").classname);
   }
 });
 
@@ -3481,10 +3488,11 @@ testrunner.define({
   },
 
   testFullConstructor : function() {
-    var slider = q("#sandbox").slider(10);
+    var slider = q("#sandbox").slider(10, [1,2,3,4]);
     this.assertEquals(10, slider.getValue());
     this.assertEquals(0, slider.getConfig("minimum"));
     this.assertEquals(100, slider.getConfig("maximum"));
+    this.assertArrayEquals([1,2,3,4], slider.getConfig("steps"));
   },
 
   testSetGetValue : function() {
@@ -3503,5 +3511,32 @@ testrunner.define({
     this.assertEquals(1, slider.getChildren(".test-class").length);
     this.assertEquals(knob[0], slider.getChildren(".test-class")[0]);
     this.assertEquals(1, slider.getChildren("h2").length);
+  },
+
+  testTwoSlider : function() {
+    q.create("<div>").appendTo("#sandbox");
+    q.create("<div>").appendTo("#sandbox");
+    q("#sandbox").getChildren().slider();
+    q("#sandbox").getChildren().eq(1).setValue(30);
+    this.assertEquals(0, q("#sandbox").getChildren().eq(0).getValue());
+    this.assertEquals(30, q("#sandbox").getChildren().eq(1).getValue());
+  },
+
+  testMinMaxValue : function() {
+    var slider = q("#sandbox").slider();
+    slider.setConfig("minimum", -10);
+    slider.setConfig("maximum", 10);
+    this.assertEquals(0, slider.getValue());
+    slider.setValue(-20);
+    this.assertEquals(-10, slider.getValue());
+    slider.setValue(20);
+    this.assertEquals(10, slider.getValue());
+  },
+
+  testMultipleInstances : function() {
+    var slider = q("#sandbox").slider();
+    this.assertEquals("qx.ui.website.Slider", q("#sandbox").classname);
+    q("#sandbox").setValue(10);
+    this.assertEquals(10, q("#sandbox").getValue());
   }
 });
