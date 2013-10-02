@@ -20,7 +20,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   },
 
   construct : function(selector, context) {
-     this.base(arguments, selector, context);
+    this.base(arguments, selector, context);
   },
 
   events :
@@ -108,13 +108,22 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         this.__valueToPosition(value);
         this.emit("changeValue", value);
       }
+
+      return this;
     },
 
 
     render : function() {
-      this._getPixels(true);
-      this.setValue(this.getValue());
+      var steps = this.getConfig("steps");
+      if (steps) {
+        this._getPixels(true);
+        this.setValue(steps[0]);
+      } else {
+        this.setValue(this.getValue());
+      }
+
       //TODO: update template
+      return this;
     },
 
 
@@ -387,6 +396,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         }
         if (typeof value !== "undefined") {
           slider.setValue(value);
+        } else {
+          slider.setValue(slider.getConfig("minimum"));
         }
 
         return slider;

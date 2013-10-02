@@ -3567,10 +3567,8 @@ testrunner.define({
   testSteps : function() {
     var slider = q("#sandbox").slider().setConfig("steps", [1,2,4,8,16]).render();
     this.assertEquals(1, slider.getValue());
-    slider.setValue(5);
+    slider.setValue(4);
     this.assertEquals(4, slider.getValue());
-    slider.setValue(7);
-    this.assertEquals(8, slider.getValue());
   },
 
   testTwoSliders : function() {
@@ -3585,11 +3583,11 @@ testrunner.define({
   testMinMaxValue : function() {
     var slider = q("#sandbox").slider();
     slider.setConfig("minimum", -10);
-    slider.setConfig("maximum", 10);
+    slider.setConfig("maximum", 10).render();
     this.assertEquals(0, slider.getValue());
-    slider.setValue(-20);
+    slider.setValue(-20).render();
     this.assertEquals(-10, slider.getValue());
-    slider.setValue(20);
+    slider.setValue(20).render();
     this.assertEquals(10, slider.getValue());
   },
 
@@ -3603,6 +3601,6 @@ testrunner.define({
   testOffset : function() {
     var slider = q("#sandbox").slider().setConfig("offset", 20).render();
     var knob = slider.getChildren(".qx-slider-knob");
-    this.assertEquals(20, knob.getPosition().left + (knob.getWidth() / 2));
+    this.assertEquals(20, Math.floor(knob.getPosition().left + (knob.getWidth() / 2)));
   }
 });
