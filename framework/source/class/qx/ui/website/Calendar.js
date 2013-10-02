@@ -9,7 +9,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       controls : "<tr>" +
                    "<td colspan='1'><button class='qx-calendar-prev' title='Previous Month'>&lt;</button></td>" +
                    "<td colspan='5'>{{month}} {{year}}</td>" +
-                   "<td colspan='1' title='Next Month' class='qx-calendar-next'><button>&gt;</button></td>" +
+                   "<td colspan='1'><button class='qx-calendar-next' title='Next Month'>&gt;</button></td>" +
                  "</tr>",
       dayRow : "<tr>" +
                  "{{#row}}<td>{{.}}</td>{{/row}}" +
@@ -66,29 +66,40 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     showValue : function(value) {
       this.setProperty("shownValue", value);
 
+      this._forEachElement(function(item) {
+        item = qxWeb(item);
+        item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
+        item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
+        item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
+      }, this);
+
       this.setHtml(this._getTable(value));
 
-      this.forEach(function(item) {
+      this._forEachElement(function(item) {
         item = qxWeb(item);
-        item.find(".qx-calendar-prev").on("click", function() {
-          var shownValue = item.getProperty("shownValue");
-          item.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() - 1));
-        }, this);
-
-        item.find(".qx-calendar-next").on("click", function() {
-          var shownValue = item.getProperty("shownValue");
-          item.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() + 1));
-        }, this);
-
-        item.find(".qx-calendar-day").on("click", function(e) {
-          var day = qxWeb(e.getTarget());
-          var value = item.getValue();
-          var newValue = new Date(day.getAttribute("value"));
-          item.setValue(newValue);
-        }, this);
+        item.find(".qx-calendar-prev").onWidget("click", this._prevMonth, item);
+        item.find(".qx-calendar-next").onWidget("click", this._nextMonth, item);
+        item.find(".qx-calendar-day").onWidget("click", this._selectDay, item);
       }, this);
 
       return this;
+    },
+
+    _prevMonth : function() {
+      var shownValue = this.getProperty("shownValue");
+      this.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() - 1));
+    },
+
+    _nextMonth : function() {
+      var shownValue = this.getProperty("shownValue");
+      this.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() + 1));
+    },
+
+    _selectDay : function(e) {
+      var day = qxWeb(e.getTarget());
+      var value = this.getValue();
+      var newValue = new Date(day.getAttribute("value"));
+      this.setValue(newValue);
     },
 
 
@@ -154,6 +165,19 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       }
 
       return weeks.join("");
+    },
+
+    dispose : function() {
+      this._forEachElement(function(item) {
+        item = qxWeb(item);
+        item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
+        item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
+        item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
+      }, this);
+
+      this.setHtml("");
+
+      this.base(arguments);
     }
 
   },

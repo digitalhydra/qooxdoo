@@ -13,7 +13,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
   construct : function(selector, context) {
     this.base(arguments, selector, context);
 
-    this.forEach(function(rating) {
+    this._forEachElement(function(rating) {
       rating = q(rating);
 
       for (var i = 0; i < this.getConfig("length"); i++) {
@@ -22,7 +22,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
       rating.getChildren("span")
         .addClasses(["qx-rating", "qx-rating-off"])
-        .on("click", this.__onClick, this);
+        .onWidget("click", this.__onClick, rating);
     }.bind(this));
 
   },
@@ -66,6 +66,15 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
     __onClick : function(e) {
       var parents = q(e.getTarget()).getParents();
       this.setValue(parents.getChildren().indexOf(e.getTarget()) + 1);
+    },
+
+    dispose : function() {
+      this._forEachElement(function(rating) {
+        rating = qxWeb(rating);
+        rating.getChildren("span").offWidget("click", rating.__onClick, rating);
+      });
+      this.setHtml("");
+      this.base(arguments);
     }
   },
 

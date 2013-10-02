@@ -214,7 +214,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       this.__dragMode = true;
 
-      qxWeb(document.documentElement).on("mousemove", this._onMouseMove, this)
+      qxWeb(document.documentElement).onWidget("mousemove", this._onMouseMove, this)
       .setStyle("cursor", "pointer");
 
       e.stopPropagation();
@@ -234,7 +234,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
         this.__valueToPosition(this.getValue());
 
-        qxWeb(document.documentElement).off("mousemove", this._onMouseMove, this)
+        qxWeb(document.documentElement).offWidget("mousemove", this._onMouseMove, this)
         .setStyle("cursor", null);
       }
 
@@ -324,12 +324,16 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         slider = qxWeb(slider);
 
         slider.offWidget("click", slider._onClick, slider);
-        slider.getChildren(".qx-slider-knob").offWidget("mousedown", slider._onMouseDown, slider);
+        slider.getChildren(".qx-slider-knob")
+        .offWidget("mousedown", slider._onMouseDown, slider)
+        .offWidget("dragstart", slider._onDragStart, slider);
+
         qxWeb(document.documentElement).offWidget("mouseup", slider._onMouseUp, slider);
         qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
       });
 
-      this.setProperty("qx-slider-context", null);
+      this.removeClass("qx-slider");
+      this.setHtml("");
 
       this.base(arguments);
     }

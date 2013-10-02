@@ -30,14 +30,14 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * @return {qxWeb} The collection for chaining
      */
     onWidget : function(type, listener, ctx) {
-      var propertyName = ctx.classname.replace(/\./g, "-") + "-context";
-      if (!ctx.getProperty(propertyName)) {
-        ctx.setProperty(propertyName, ctx);
+      var propertyName = this.classname.replace(/\./g, "-") + "-context";
+      if (!this.getProperty(propertyName)) {
+        this.setProperty(propertyName, ctx);
       }
-      var originalCtx = ctx.getProperty(propertyName);
+      var originalCtx = this.getProperty(propertyName);
 
-      if (!ctx.hasListener(type, listener, originalCtx)) {
-        ctx.on(type, listener, originalCtx);
+      if (!this.hasListener(type, listener, originalCtx)) {
+        this.on(type, listener, originalCtx);
       }
 
       return this;
@@ -53,9 +53,10 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * @return {[type]}          [description]
      */
     offWidget : function(type, listener, ctx) {
-      var propertyName = ctx.classname.replace(/\./g, "-") + "-context";
-      var originalCtx = ctx.getProperty(propertyName);
-      originalCtx.off(type, listener, originalCtx);
+      var propertyName = this.classname.replace(/\./g, "-") + "-context";
+      var originalCtx = this.getProperty(propertyName);
+
+      this.off(type, listener, originalCtx);
 
       return this;
     }
