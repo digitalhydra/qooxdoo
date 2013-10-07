@@ -152,8 +152,9 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
 
 
     dispose : function() {
-      // TODO delete custom templates and configs
       this.removeAttribute("qx-class");
+      this.setProperty("config", undefined);
+      this.setProperty("templates", undefined);
       this.removeClass("qx-widget");
 
       return qxWeb.$init(this, qxWeb);

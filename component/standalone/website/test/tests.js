@@ -3391,6 +3391,17 @@ testrunner.define({
     this.assertEquals("qx.ui.website.Widget", qxWeb("#sandbox").classname);
     this.assertInstance(w.dispose(), qxWeb);
     this.assertEquals("qxWeb", qxWeb("#sandbox").classname);
+  },
+
+  testDisposeWithConfig : function() {
+    var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    w.setConfig("test", "123");
+    w.setTemplate("test", "456");
+    w.dispose();
+    w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    this.assertUndefined(w.getConfig("test"));
+    this.assertUndefined(w.getTemplate("test"));
+    this.assertUndefined(w.getTemplate("uiuibgkabfg"));
   }
 });
 
