@@ -36,7 +36,6 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   members :
   {
     __dragMode : null,
-    __pixel : null,
 
 
     init : function() {
@@ -125,10 +124,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
           this.setValue(step[0]);
         }
       } else if (qx.Bootstrap.getClass(step) == "Number") {
-        this.__pixel = null;
+        this.setProperty("stepsToPixels", null);
         this.setValue(Math.round(this.getValue() / step) * step);
       } else {
-        this.__pixel = null;
+        this.setProperty("stepsToPixels", null);
         this.setValue(this.getValue());
       }
       this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent());
@@ -166,21 +165,21 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _getPixels : function(refresh)
     {
-      if (this.__pixel && !refresh) {
-        return this.__pixel;
+      if (this.getProperty("stepsToPixels") && !refresh) {
+        return this.getProperty("stepsToPixels");
       }
 
       var step = this.getConfig("step");
       if (!qx.Bootstrap.isArray(step)) {
+        this.setProperty("stepsToPixels", null);
         return [];
       }
 
       var dragBoundaries = this._getDragBoundaries();
-
-      this.__pixel = [];
+      var pixel = [];
 
       // First pixel value is fixed
-      this.__pixel.push(dragBoundaries.min);
+      pixel.push(dragBoundaries.min);
 
       var lastIndex = step.length-1;
 
@@ -194,13 +193,14 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       for(var i=1, j=step.length-1; i<j; i++){
         stepCount = step[i] - step[0];
-        this.__pixel.push(Math.round(stepCount*stepWidth) + dragBoundaries.min);
+        pixel.push(Math.round(stepCount*stepWidth) + dragBoundaries.min);
       }
 
       // Last pixel value is fixed
-      this.__pixel.push(dragBoundaries.max);
+      pixel.push(dragBoundaries.max);
 
-      return this.__pixel;
+      this.setProperty("stepsToPixels", pixel);
+      return pixel;
     },
 
 
@@ -354,7 +354,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      */
     _onWindowResize : function() {
       var value = this.getProperty("value");
-      this._getPixels(true);
+      if (qx.Bootstrap.isArray(this.getConfig("step"))) {
+        this._getPixels(true);
+      }
       this.__valueToPosition(value);
     },
 
