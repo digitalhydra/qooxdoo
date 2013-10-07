@@ -11,11 +11,11 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       minimum : 0,
       maximum : 100,
       offset : 0,
-      steps : null
+      step : 1
     },
 
     _templates : {
-      knob : "<div>"
+      knobContent : "{{value}}"
     }
   },
 
@@ -54,7 +54,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         qxWeb(window).onWidget("resize", slider._onWindowResize, slider);
 
         if (slider.getChildren(".qx-slider-knob").length === 0) {
-          slider.append(qx.ui.website.Widget.create(slider.getTemplate("knob"))
+          slider.append(qx.ui.website.Widget.create("<div>")
           .addClass("qx-slider-knob"));
         }
 
@@ -63,6 +63,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
           "draggable": "false",
           "unselectable": "true"
         })
+        .setHtml(slider._getKnobContent())
         .onWidget("mousedown", slider._onMouseDown, slider)
         .onWidget("dragstart", slider._onDragStart, slider);
       });
@@ -89,7 +90,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         throw Error("Please provide a Number value for 'value'!");
       }
 
-      if (!this.getConfig("steps")) {
+      var step = this.getConfig("step");
+      if (!qx.Bootstrap.isArray(step)) {
         var min = this.getConfig("minimum");
         var max = this.getConfig("maximum");
         if (value < min) {
@@ -98,14 +100,14 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         if (value > max) {
           value = max;
         }
+        value = Math.round(value / step) * step;
       }
 
-
       this.setProperty("value", value);
-      var steps = this.getConfig("steps");
 
-      if (!steps || steps.indexOf(value) != -1) {
+      if (!qx.Bootstrap.isArray(step) || step.indexOf(value) != -1) {
         this.__valueToPosition(value);
+        this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent())
         this.emit("changeValue", value);
       }
 
@@ -114,19 +116,29 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
 
     render : function() {
-      var steps = this.getConfig("steps");
-      if (steps) {
+      var step = this.getConfig("step");
+      if (qx.Bootstrap.isArray(step)) {
         this._getPixels(true);
-        if (steps.indexOf(this.getValue()) == -1) {
-          this.setValue(steps[0]);
+        if (step.indexOf(this.getValue()) == -1) {
+          this.setValue(step[0]);
         }
+      } else if (qx.Bootstrap.getClass(step) == "Number") {
+        this.__pixel = null;
+        this.setValue(Math.round(this.getValue() / step) * step);
       } else {
         this.__pixel = null;
         this.setValue(this.getValue());
       }
+      this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent());
 
-      //TODO: update template
       return this;
+    },
+
+
+    _getKnobContent : function() {
+      return qxWeb.template.render(
+        this.getTemplate("knobContent"), {value: this.getValue()}
+      );
     },
 
 
@@ -156,8 +168,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         return this.__pixel;
       }
 
-      var steps = this.getConfig("steps");
-      if (!steps) {
+      var step = this.getConfig("step");
+      if (!qx.Bootstrap.isArray(step)) {
         return [];
       }
 
@@ -168,18 +180,18 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       // First pixel value is fixed
       this.__pixel.push(dragBoundaries.min);
 
-      var lastIndex = steps.length-1;
+      var lastIndex = step.length-1;
 
       //The width really used by the slider (drag area)
       var usedWidth = this.getWidth() - (this.getConfig("offset") * 2);
 
       //The width of a single slider step
-      var stepWidth = usedWidth/(steps[lastIndex]-steps[0]);
+      var stepWidth = usedWidth/(step[lastIndex] - step[0]);
 
       var stepCount = 0;
 
-      for(var i=1, j=steps.length-1; i<j; i++){
-        stepCount = steps[i] - steps[0];
+      for(var i=1, j=step.length-1; i<j; i++){
+        stepCount = step[i] - step[0];
         this.__pixel.push(Math.round(stepCount*stepWidth) + dragBoundaries.min);
       }
 
@@ -198,6 +210,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     __getNearestValue : function(position) {
       var pixels = this._getPixels();
       if (pixels.length === 0) {
+
         var dragBoundaries = this._getDragBoundaries();
         var availableWidth = dragBoundaries.max - dragBoundaries.min;
         var relativePosition = position - dragBoundaries.min;
@@ -210,6 +223,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         }
         if (result > max) {
           result = max;
+        }
+        var step = this.getConfig("step");
+        if (qx.Bootstrap.getClass(step) == "Number") {
+          result = Math.round(result / step) * step;
         }
         return result;
       }
@@ -227,7 +244,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       currentIndex = Math.abs(position - before) <=  Math.abs(position - after) ? currentIndex : currentIndex + 1;
 
-      return this.getConfig("steps")[currentIndex];
+      return this.getConfig("step")[currentIndex];
     },
 
 
@@ -352,7 +369,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       var valueToPixel;
       if (pixels.length > 0) {
         // Get the pixel value of the current step value
-        valueToPixel = pixels[this.getConfig("steps").indexOf(value)];
+        valueToPixel = pixels[this.getConfig("step").indexOf(value)];
       } else {
         var dragBoundaries = this._getDragBoundaries();
         var availableWidth = dragBoundaries.max - dragBoundaries.min;
@@ -392,10 +409,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
   // Make the slider widget available as a qxWeb module
   defer : function(statics) {
     qxWeb.$attach({
-      slider : function(value, steps) {
+      slider : function(value, step) {
         var slider = new qx.ui.website.Slider(this);
-        if (typeof steps !== "undefined") {
-          slider.setConfig("steps", steps);
+        if (typeof step !== "undefined") {
+          slider.setConfig("step", step);
         }
         if (typeof value !== "undefined") {
           slider.setValue(value);

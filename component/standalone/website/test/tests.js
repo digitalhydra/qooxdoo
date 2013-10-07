@@ -3590,7 +3590,7 @@ testrunner.define({
     this.assertEquals(10, slider.getValue());
     this.assertEquals(0, slider.getConfig("minimum"));
     this.assertEquals(100, slider.getConfig("maximum"));
-    this.assertArrayEquals([1,2,3,4], slider.getConfig("steps"));
+    this.assertArrayEquals([1,2,3,4], slider.getConfig("step"));
   },
 
   testSetGetValue : function() {
@@ -3611,17 +3611,26 @@ testrunner.define({
     this.assertEquals(1, slider.getChildren("h2").length);
   },
 
-  testSteps : function() {
-    var slider = q("#sandbox").slider().setConfig("steps", [1,2,4,8,16]).render();
+  testStepAsNumber : function() {
+    var slider = q("#sandbox").slider().setConfig("step", 10).render();
+    this.assertEquals(0, slider.getValue());
+    slider.setValue(14);
+    this.assertEquals(10, slider.getValue());
+    slider.setValue(16);
+    this.assertEquals(20, slider.getValue());
+  },
+
+  testStepAsArray : function() {
+    var slider = q("#sandbox").slider().setConfig("step", [1,2,4,8,16]).render();
     this.assertEquals(1, slider.getValue());
     slider.setValue(4);
     this.assertEquals(4, slider.getValue());
   },
 
-  testStepsReset : function() {
-    var slider = q("#sandbox").slider().setConfig("steps", [1,2,4,8,16]).render();
+  testStepReset : function() {
+    var slider = q("#sandbox").slider().setConfig("step", [1,2,4,8,16]).render();
     slider.setValue(4);
-    slider.setConfig("steps", null).render();
+    slider.setConfig("step", null).render();
     this.assertEquals(4, slider.getValue());
   },
 
