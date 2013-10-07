@@ -28,15 +28,17 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
   members : {
     setValue : function(value) {
-      var children = this.getChildren("span");
-      children.removeClass("qx-rating-off");
-      children.slice(value, children.length).addClass("qx-rating-off");
-      this.emit("changeValue", this.getValue());
+      this._forEachElementWrapped(function(rating) {
+        var children = rating.getChildren("span");
+        children.removeClass("qx-rating-off");
+        children.slice(value, children.length).addClass("qx-rating-off");
+        rating.emit("changeValue", rating.getValue());
+      });
     },
 
 
     getValue : function() {
-      return this.getChildren("span").not(".qx-rating-off").length;
+      return this.eq(0).getChildren("span").not(".qx-rating-off").length;
     },
 
 

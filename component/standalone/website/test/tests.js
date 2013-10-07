@@ -3454,6 +3454,14 @@ testrunner.define({
     r.setValue(2);
     this.assertEquals(2, r.getValue());
     this.assertEquals(2, rr.getValue());
+  },
+
+  testTwoRatings : function() {
+    q.create("<div/><div/>").rating().appendTo("#sandbox");
+    q("#sandbox").getChildren().setValue(2);
+    this.assertEquals(2, q("#sandbox").getChildren().getValue());
+    this.assertEquals(2, q("#sandbox").getChildren().eq(0).getValue());
+    this.assertEquals(2, q("#sandbox").getChildren().eq(1).getValue());
   }
 });
 
