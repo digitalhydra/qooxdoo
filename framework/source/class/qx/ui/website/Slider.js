@@ -382,7 +382,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       this.removeClass("qx-slider");
       this.setHtml("");
 
-      this.base(arguments);
+      return this.base(arguments);
     }
   },
 

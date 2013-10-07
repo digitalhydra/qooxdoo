@@ -73,7 +73,8 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
         rating.getChildren("span").offWidget("click", rating.__onClick, rating);
       });
       this.setHtml("");
-      this.base(arguments);
+
+      return this.base(arguments);
     }
   },
 

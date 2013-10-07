@@ -3389,7 +3389,7 @@ testrunner.define({
   testDispose : function() {
     var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
     this.assertEquals("qx.ui.website.Widget", qxWeb("#sandbox").classname);
-    w.dispose();
+    this.assertInstance(w.dispose(), qxWeb);
     this.assertEquals("qxWeb", qxWeb("#sandbox").classname);
   }
 });

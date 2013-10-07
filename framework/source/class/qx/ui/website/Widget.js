@@ -155,6 +155,8 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       // TODO delete custom templates and configs
       this.removeAttribute("qx-class");
       this.removeClass("qx-widget");
+
+      return qxWeb.$init(this, qxWeb);
     }
   },
 

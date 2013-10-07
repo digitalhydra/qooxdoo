@@ -174,7 +174,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
       this.setHtml("");
 
-      this.base(arguments);
+      return this.base(arguments);
     }
 
   },
