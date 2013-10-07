@@ -123,6 +123,12 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
         var attribName = "qx" + qxWeb.string.firstUp(type) +
           qxWeb.string.firstUp(name);
         item = this.getData(attribName);
+
+        // not defined HTML attributes result in 'null' values
+        if (!this[0].dataset && item === null) {
+          item = undefined;
+        }
+
         try {
           item = JSON.parse(item);
         } catch(e) {}
