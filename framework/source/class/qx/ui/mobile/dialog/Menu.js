@@ -57,14 +57,14 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
       this.__selectionList.setModel(itemsModel);
     }
 
-    var menuContainer = new qx.ui.mobile.container.Composite();
+    this.__menuContainer = new qx.ui.mobile.container.Composite();
     this.__clearButton = this._createClearButton();
     this.__listScroller = this._createListScroller(this.__selectionList);
 
-    menuContainer.add(this.__listScroller);
-    menuContainer.add(this.__clearButton);
+    this.__menuContainer.add(this.__listScroller);
+    this.__menuContainer.add(this.__clearButton);
 
-    this.base(arguments, menuContainer, anchor);
+    this.base(arguments, this.__menuContainer, anchor);
 
     if(anchor) {
       this.setModal(false);
@@ -157,6 +157,17 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
       check : "Integer",
       apply : "_applySelectedIndex",
       nullable : true
+    },
+
+
+    /**
+    * This value defines how much list items are visible inside the menu.
+    */
+    visibleListItems : 
+    {
+      check : "Integer",
+      apply : "_updatePosition",
+      nullable : true
     }
   },
 
@@ -172,6 +183,7 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
     __selectionList: null,
     __clearButton : null,
     __listScroller : null,
+    __menuContainer : null,
 
 
     // overidden
@@ -198,7 +210,7 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
     /**
      * Creates the scrollComposite for the selectionList. Override this to customize the widget.
      * @param selectionList {qx.ui.mobile.list.List} The selectionList of this menu.
-     * @return {qx.ui.mobile.container.ScrollComposite} the scrollComposite which contains selectionList of this menu.
+     * @return {qx.ui.mobile.container.ScrollComposite} the scrollComposite which contains the selectionList of this menu.
      */
     _createListScroller : function(selectionList) {
       var listScroller = new qx.ui.mobile.container.ScrollComposite();
@@ -209,17 +221,28 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
     },
 
 
+    /**
+    * Getter for the scrollComposite which contains a @see {qx.ui.mobile.list.List} with the choosable items.
+    * @return {qx.ui.mobile.container.ScrollComposite} the scrollComposite which contains the selectionList of this menu.
+    */
+    _getListScroller : function() {
+      return this.__listScroller;
+    },
+
+
     // overridden
     _updatePosition : function() {
-      var titleHeight = 0;
-      var titleWidget = this.getTitleWidget();
-      if(titleWidget != null) {
-         titleHeight = titleWidget.getContainerElement().getHeight();
+      var parentHeight = qx.ui.mobile.dialog.Popup.ROOT.getContentElement().getHeight();
+      var listScrollerHeight = parseInt(parentHeight) * 0.75;
+      
+      if (this.getVisibleListItems() != null) {
+        var newListScrollerHeight = this.__selectionList.getListItemHeight() * this.getVisibleListItems();
+        if(newListScrollerHeight < listScrollerHeight) {
+          listScrollerHeight = newListScrollerHeight;
+        }
       }
+      this.__listScroller.setHeight(listScrollerHeight + "px");  
 
-      // Menu max height has to be smaller than screen height.
-      var maxHeight = qx.bom.Viewport.getHeight();
-      this.__listScroller.setHeight(maxHeight-titleHeight*3+"px");
       this.base(arguments);
     },
 
@@ -254,6 +277,15 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
       selectionList.addListener("tap", this._onSelectionListTap, this);
 
       return selectionList;
+    },
+
+
+    /**
+    * Getter for the selectionList of the menu.
+    * @return {qx.ui.mobile.list.List} The selectionList of this menu.
+    */
+    getSelectionList : function() {
+      return this.__selectionList;
     },
 
 
@@ -361,7 +393,7 @@ qx.Class.define("qx.ui.mobile.dialog.Menu",
   destruct : function()
   {
     this.__selectionList.removeListener("tap", this._onSelectionListTap, this);
-    this._disposeObjects("__selectionList","__clearButton","__listScroller");
+    this._disposeObjects("__selectionList","__clearButton","__listScroller","__menuContainer");
   }
 
 });
