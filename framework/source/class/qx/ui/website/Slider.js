@@ -100,7 +100,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         if (value > max) {
           value = max;
         }
-        value = Math.round(value / step) * step;
+        if (qx.Bootstrap.getClass(step) == "Number") {
+          value = Math.round(value / step) * step;
+        }
       }
 
       this.setProperty("value", value);

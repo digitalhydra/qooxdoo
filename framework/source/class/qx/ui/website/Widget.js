@@ -119,7 +119,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
         item = storage[name];
       }
 
-      if (!item && type == "config") {
+      if (item === undefined && type == "config") {
         var attribName = "qx" + qxWeb.string.firstUp(type) +
           qxWeb.string.firstUp(name);
         item = this.getData(attribName);
@@ -128,7 +128,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
         } catch(e) {}
       }
 
-      if (!item && this.constructor["_" + type]) {
+      if (item === undefined && this.constructor["_" + type]) {
         return this.constructor["_" + type][name];
       }
 
