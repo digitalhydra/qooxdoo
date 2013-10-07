@@ -54,7 +54,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         qxWeb(window).onWidget("resize", slider._onWindowResize, slider);
 
         if (slider.getChildren(".qx-slider-knob").length === 0) {
-          slider.append(qx.ui.website.Widget.create("<div>")
+          slider.append(qx.ui.website.Widget.create("<button>")
           .addClass("qx-slider-knob"));
         }
 
