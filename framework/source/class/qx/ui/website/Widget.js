@@ -157,6 +157,10 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       this.setProperty("templates", undefined);
       this.removeClass("qx-widget");
 
+      for (var name in this.constructor.$$events) {
+        this.allOff(name);
+      }
+
       return qxWeb.$init(this, qxWeb);
     }
   },

@@ -43,6 +43,12 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
   },
 
 
+  events : {
+    /** Fired at each value change */
+    "changeValue" : "Date"
+  },
+
+
   members : {
     render : function() {
       this.showValue(this.getProperty("shownValue"));

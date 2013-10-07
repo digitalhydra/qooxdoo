@@ -3473,6 +3473,25 @@ testrunner.define({
     this.assertEquals(2, q("#sandbox").getChildren().getValue());
     this.assertEquals(2, q("#sandbox").getChildren().eq(0).getValue());
     this.assertEquals(2, q("#sandbox").getChildren().eq(1).getValue());
+  },
+
+  testListenerRemove : function() {
+    var r = q("#sandbox").rating();
+    var calledChange = 0;
+    var calledCustom = 0;
+
+    r.on("changeValue", function() {
+      calledChange++;
+    });
+    r.on("custom", function() {
+      calledCustom++;
+    });
+
+    r.dispose();
+    q("#sandbox").rating().setValue(3).emit("custom");
+
+    this.assertEquals(0, calledChange);
+    this.assertEquals(1, calledCustom);
   }
 });
 

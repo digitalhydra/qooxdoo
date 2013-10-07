@@ -26,6 +26,12 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
   },
 
 
+  events : {
+    /** Fired at each value change */
+    "changeValue" : "Number"
+  },
+
+
   members : {
     setValue : function(value) {
       this._forEachElementWrapped(function(rating) {
@@ -34,6 +40,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
         children.slice(value, children.length).addClass("qx-rating-off");
         rating.emit("changeValue", rating.getValue());
       });
+      return this;
     },
 
 
