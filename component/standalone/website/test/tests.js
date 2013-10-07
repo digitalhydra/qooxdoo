@@ -3588,6 +3588,13 @@ testrunner.define({
     this.assertEquals(4, slider.getValue());
   },
 
+  testStepsReset : function() {
+    var slider = q("#sandbox").slider().setConfig("steps", [1,2,4,8,16]).render();
+    slider.setValue(4);
+    slider.setConfig("steps", null).render();
+    this.assertEquals(4, slider.getValue());
+  },
+
   testTwoSliders : function() {
     q.create("<div>").appendTo("#sandbox");
     q.create("<div>").appendTo("#sandbox");

@@ -119,6 +119,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         this._getPixels(true);
         this.setValue(steps[0]);
       } else {
+        this.__pixel = null;
         this.setValue(this.getValue());
       }
 
