@@ -3,8 +3,8 @@
   overflow-y: hidden;
   z-index: 1000001;
   position: absolute;
-  background-color: white;
-  border: 1px solid rgb(221, 221, 221);
+  background-color: $background-color;
+  border: 1px solid $border-color;
   padding: 0px;
   margin: 0px;
 }
@@ -16,6 +16,6 @@
 }
 
 .qx-menu li:hover {
-  color: white;
-  background-color: rgb(34, 68, 187);
+  color: $background-color;
+  background-color: $highlight-color;
 }

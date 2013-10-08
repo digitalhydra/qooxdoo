@@ -1,46 +1,42 @@
-$button-background: rgb(249, 249, 249) 40%, rgb(227, 227, 227) 70%;
-$button-background-active: rgb(186, 186, 186) 40%, rgb(235, 235, 235) 70%;
-$button-background-disabled: rgb(249, 249, 249) 40%, rgb(227, 227, 227) 70%; // needs !important
-
-.qx-button-disabled {
-  border: 1px solid rgb(187, 187, 187) !important;
-  @include background($button-background-disabled);
-  opacity: 0.8;
+.qx-button[disabled] {
+  border: 1px solid $border-color;
+  color: $highlight-color-disabled;
 }
 
-.qx-button-disabled img {
+.qx-button[disabled] img {
   opacity: 0.4;
 }
 
 .qx-button {
   display: inline-block;
-  padding: 5px 6px;
+  padding: 8px 12px;
   margin: 3px;
-  border: 1px solid rgb(187, 187, 187);
+  border: 1px solid $border-color;
   @include background-clip(padding-box);
-  @include border-radius(3px);
-  @include background($button-background);
+  @include border-radius(2px);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   outline: none;
+  background: $background-color;
+  color: $highlight-color;
+  line-height: 1;
 }
 
 .qx-button:hover {
-  border: 1px solid rgb(147, 147, 147);
+  border: 1px solid $highlight-color;
 }
 
 .qx-button:active {
-  border: 1px solid rgb(187, 187, 187);
-  @include background($button-background-active);
+  border: 1px solid darken($highlight-color, 20%);
+  background: darken($background-color, 10%);
 }
 
 .qx-button:focus {
-  border: 1px solid rgb(61, 114, 201);
+  border-color: $highlight-color;
 }
 
 .qx-button img {
-  margin-left: 8px;
-  margin-right: 5px;
+  margin-left: 10px;
 }
 
 .qx-button img,span {

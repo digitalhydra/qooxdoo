@@ -1,6 +1,6 @@
 .qx-calendar table {
   border-width: 1px;
-  border-color: #666666;
+  border-color: $border-color;
   border-collapse: collapse;
   text-align: center;
   border-spacing: 0;
@@ -11,32 +11,31 @@
 }
 
 .qx-calendar button:focus {
-  -webkit-text-stroke: 1px rgb(34, 68, 187);
-  color: rgb(34, 68, 187);
+  -webkit-text-stroke: 1px $highlight-color;
+  color: $highlight-color;
 }
 
 .qx-calendar thead {
   border-width: 1px;
   border-style: solid;
-  border-color: #666666;
-  background-color: #dedede;
+  border-color: $border-color;
   font-weight: bold;
 }
 
 .qx-calendar .othermonth button {
-  color: #aaa;
+  color: $highlight-color-disabled;
 }
 
 .qx-calendar .today {
-  background-color: #eee;
+  background-color: lighten($highlight-color-disabled, 30%);
 }
 
 .qx-calendar .selected {
-  background-color: rgb(34, 68, 187);
+  background-color: $highlight-color;
 }
 
 .qx-calendar .selected button {
-  color: white;
+  color: $background-color;
 }
 
 .qx-calendar thead td {
@@ -47,8 +46,8 @@
 .qx-calendar td {
   border-width: 1px;
   border-style: solid;
-  border-color: #666666;
-  background-color: #ffffff;
+  border-color: $border-color;
+  background-color: $background-color;
 }
 
 .qx-calendar td button {
@@ -73,4 +72,13 @@
 .qx-calendar thead tr:first-child td:last-child {
   border-left: 0;
   text-align: right;
+}
+
+
+.qx-calendar table[disabled] {
+  color: $highlight-color-disabled;
+}
+
+.qx-calendar[disabled] .selected {
+  background-color: $highlight-color-disabled;
 }

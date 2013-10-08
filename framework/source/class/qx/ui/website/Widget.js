@@ -71,13 +71,25 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
 
 
   members : {
-
     init : function() {
       this.setAttribute("qx-class", this.classname);
       if (!this.hasClass("qx-widget")) {
         this.addClass("qx-widget");
       }
     },
+
+
+    setEnabled : function(value) {
+      this.setAttribute("disabled", !value);
+      this.find("*").setAttribute("disabled", !value);
+      return this;
+    },
+
+
+    getEnabled : function() {
+      return !this.getProperty("disabled");
+    },
+
 
     setTemplate : function(name, template) {
       return this._setData("templates", name, template);

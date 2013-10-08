@@ -1,8 +1,10 @@
 $rating-background: 270deg, #E3B64A, #D5771D;
+$rating-background-disabled: 270deg, desaturate(#E3B64A, 100%), desaturate(#D5771D, 100%);
 $rating-background-off: 270deg, #eee, #cfcfcf;
+$rating-color-off: #cfcfcf;
 
 .qx-rating {
-  font-size: 30px;
+  font-size: 22px;
   background-image: -webkit-linear-gradient($rating-background);
   color: #E3B64A;
   @include background-clip(text);
@@ -14,8 +16,19 @@ $rating-background-off: 270deg, #eee, #cfcfcf;
 
 .qx-rating.qx-rating-off {
   background-image: -webkit-linear-gradient($rating-background-off);
-  color: #cfcfcf;
+  color: $rating-color-off;
   @include background-clip(text);
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1px #cfcfcf;
+  -webkit-text-stroke: 1px $rating-color-off;
+}
+
+.qx-rating[disabled] {
+  background-image: -webkit-linear-gradient($rating-background-disabled);
+  -webkit-text-stroke: 1px desaturate(#BB6718, 100%);
+}
+
+.qx-rating.qx-rating-off[disabled] {
+  background-image: -webkit-linear-gradient($rating-background-off);
+  -webkit-text-stroke: 1px desaturate($rating-color-off, 100%);
+  color: $rating-color-off;
 }

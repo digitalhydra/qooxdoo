@@ -1,6 +1,9 @@
 $slider-background : #8E8E8E, #B7B7B7;
+$slider-background-disabled : lighten(#8E8E8E, 40%), lighten(#B7B7B7, 20%);
 $slider-border: #7B7B7B;
+
 $slider-knob-background : #F7F7F7, #E8E8E8;
+$slider-knob-background-disabled : #F7F7F7, lighten(#E8E8E8, 5%);
 $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
 
 .qx-slider {
@@ -42,5 +45,16 @@ $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
 
 .qx-slider-knob:active {
   @include background($slider-knob-background-active);
-  color: #F7F7F7;
+  color: $background-color;
+}
+
+.qx-slider[disabled]:before {
+  border: 1px solid lighten($slider-border, 40%);
+  @include background($slider-background-disabled);
+}
+
+.qx-slider-knob[disabled] {
+  border: 1px solid lighten($slider-border, 30%);
+  @include background($slider-knob-background-disabled);
+  color: lighten($slider-border, 25%);
 }

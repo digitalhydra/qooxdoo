@@ -1,3 +1,10 @@
+$highlight-color: #619EDF;
+$highlight-color-disabled: desaturate($highlight-color, 100%);
+
+$border-color : #bbb;
+$background-color: white;
+
+
 .qx-widget {
   overflow-x: hidden;
   overflow-y: hidden;
@@ -5,3 +12,9 @@
   @include user-select(none);
   cursor: pointer;
 }
+
+.qx-widget[disabled] {
+  cursor: none;
+  pointer-events: none;
+}
+
