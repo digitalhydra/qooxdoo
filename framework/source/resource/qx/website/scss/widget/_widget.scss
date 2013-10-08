@@ -13,8 +13,8 @@ $background-color: white;
   cursor: pointer;
 }
 
-.qx-widget[disabled] {
-  cursor: none;
+.qx-widget[disabled],
+.qx-widget[disabled] * {
+  cursor: default;
   pointer-events: none;
 }
-
