@@ -30,16 +30,10 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
   construct : function(selector, context) {
     this.base(arguments, selector, context);
 
-    this.forEach(function(calendar) {
-      calendar = qxWeb(calendar);
-
-      this.showValue(new Date());
-
-      if (!calendar.hasClass("qx-calendar")) {
-        calendar.addClass("qx-calendar");
-      }
-
-    }.bind(this));
+    this._forEachElementWrapped(function(calendar) {
+      calendar.showValue(new Date());
+      calendar.addClass("qx-calendar");
+    });
   },
 
 

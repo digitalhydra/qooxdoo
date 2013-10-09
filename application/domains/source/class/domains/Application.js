@@ -46,11 +46,10 @@ qx.Class.define("domains.Application",
       this.base(arguments);
 
       // Website widget
-      var root = document.body;
       var arrow = "down.gif";
 
       // Menus
-      var menu = q("#menu").addClass("qx-menu").appendTo(root).hide();
+      var menu = q("#menu").addClass("qx-menu").appendTo(document.body).hide();
       menu.getChildren().on("click", function() {
         console.log("Menu click on", this.getHtml());
       });

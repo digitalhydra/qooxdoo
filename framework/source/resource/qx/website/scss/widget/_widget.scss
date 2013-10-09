@@ -10,7 +10,6 @@ $background-color: white;
   overflow-y: hidden;
   outline: none;
   @include user-select(none);
-  cursor: pointer;
 }
 
 .qx-widget[disabled],

@@ -9,6 +9,7 @@ $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
 .qx-slider {
   overflow-y: visible;
   overflow-x: visible;
+  cursor: pointer;
 }
 
 .qx-slider:before {
@@ -26,6 +27,7 @@ $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
 }
 
 .qx-slider-knob {
+  cursor: pointer;
   display: inline-block;
 
   @include user-select(none);

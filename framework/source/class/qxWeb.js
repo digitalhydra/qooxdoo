@@ -312,6 +312,7 @@ qx.Bootstrap.define("qxWeb", {
           func.apply(ctx || this, [this[i], i, this]);
         }
       }
+      return this;
     },
 
 
@@ -328,6 +329,7 @@ qx.Bootstrap.define("qxWeb", {
       this._forEachElement(function(item, idx, arr) {
         func.apply(this, [qxWeb(item), idx, arr]);
       }, ctx);
+      return this;
     }
   },
 
