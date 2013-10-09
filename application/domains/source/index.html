@@ -48,9 +48,24 @@
       -webkit-text-fill-color: #ccc;
       -webkit-text-stroke: 0;
     }
+    
+    #tabs {
+      margin: 20px;
+    }
   </style>
 </head>
 <body>
+
+  <div id="tabs">
+    <ul>
+      <li data-qx-tab-page="#page1"><button>Page 1</button></li>
+      <li data-qx-tab-page="#page2" class="qx-tab-button-active"><button>Page 2</button></li>
+    </ul>
+    <div id="page1">Content of page 1</div>
+    <div id="page2">Content of page 2</div>
+  </div>
+
+
   <div id="toolbar" style="display: none">
     <button id="button" qx-class="qx.ui.website.Button"><span>Neu</span><img src="down.gif"></button>
     <button disabled class="qx-menu-button"><span>Domain-Typ</span></button>
@@ -62,6 +77,8 @@
     <button><span>Filter</span></button>
     <button><span>Suche</span></button>
   </div>
+
+
 
   <!-- 
   <table id="domains" border="1" cellPadding="5" style="display: none; margin: 40px; float: left;">

@@ -19,6 +19,7 @@
  * @require(qx.ui.website.Slider)
  * @require(qx.module.util.Type)
  * @require(qx.ui.website.Calendar)
+ * @require(qx.ui.website.Tabs)
  */
 qx.Class.define("domains.Application",
 {
@@ -44,6 +45,10 @@ qx.Class.define("domains.Application",
     {
       // Call super class
       this.base(arguments);
+
+
+      q("#tabs").tabs("justify");
+
 
       // Website widget
       var arrow = "down.gif";
