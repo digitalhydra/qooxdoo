@@ -21,6 +21,10 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     this._forEachElementWrapped(function(tabs) {
       tabs.addClass("qx-tabs");
 
+      if (tabs.getChildren("ul").length === 0) {
+        tabs.append(qxWeb.create("<ul/>"));
+      }
+
       var buttons = tabs.find("ul > li");
       buttons.addClass("qx-tab-button")._forEachElementWrapped(function(button) {
         tabs._showPage(button, false);
