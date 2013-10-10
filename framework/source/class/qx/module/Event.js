@@ -254,7 +254,8 @@ qx.Bootstrap.define("qx.module.Event", {
      *
      * @attach {qxWeb}
      * @param type {String} Event type, e.g. <code>mousedown</code>
-     * @param type {Function?} Event listener to check for.
+     * @param listener {Function?} Event listener to check for.
+     * @param context {Object?} Context object listener to check for.
      * @return {Boolean} <code>true</code> if one or more listeners are attached
      */
     hasListener : function(type, listener, context) {

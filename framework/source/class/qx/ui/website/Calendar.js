@@ -1,3 +1,23 @@
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2013 1&1 Internet AG, Germany, http://www.1und1.de
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Martin Wittemann (wittemann)
+     * Daniel Wagner (danielwagner)
+
+************************************************************************ */
+
 /**
  * @require(qx.module.Template)
  */
@@ -44,12 +64,23 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
 
   members : {
+    /**
+     * Re-render the calendar(s), e.g. if templates or config options changed
+     *
+     * @return {qxWeb} The collection for chaining
+     */
     render : function() {
       this.showValue(this.getProperty("shownValue"));
       return this;
     },
 
 
+    /**
+     * Sets the given date as the current value displays it
+     *
+     * @param value {Date} Date to display
+     * @return {qxWeb} The collection for chaining
+     */
     setValue : function(value) {
       this.setProperty("value", value);
       this.showValue(value);
@@ -58,11 +89,23 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     },
 
 
+    /**
+     * Returns the currently selected date of the first
+     * calendar widget in the collection
+     *
+     * @return {qxWeb} The collection for chaining
+     */
     getValue : function() {
       return this.getProperty("value");
     },
 
 
+    /**
+     * Displays the given date
+     *
+     * @param value {Date} Date to display
+     * @return {qxWeb} The collection for chaining
+     */
     showValue : function(value) {
       this.setProperty("shownValue", value);
 
@@ -83,16 +126,29 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       return this;
     },
 
+
+    /**
+     * Displays the previous month
+     */
     _prevMonth : function() {
       var shownValue = this.getProperty("shownValue");
       this.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() - 1));
     },
 
+
+    /**
+     * Displays the next month
+     */
     _nextMonth : function() {
       var shownValue = this.getProperty("shownValue");
       this.showValue(new Date(shownValue.getFullYear(), shownValue.getMonth() + 1));
     },
 
+
+    /**
+     * Sets the current value to the day selected by the user
+     * @param e {Event} click event
+     */
     _selectDay : function(e) {
       var day = qxWeb(e.getTarget());
       var newValue = new Date(day.getAttribute("value"));
@@ -100,9 +156,15 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     },
 
 
+    /**
+     * Renders the calendar for the given date
+     *
+     * @param date {Date} date to render
+     * @return {String} calendar HTML
+     */
     _getTable : function(date) {
       var controls = qxWeb.template.render(this.getTemplate("controls"), this._getControlsData(date));
-      var dayRow = qxWeb.template.render(this.getTemplate("dayRow"), this._getDayRowData(date));
+      var dayRow = qxWeb.template.render(this.getTemplate("dayRow"), this._getDayRowData());
 
       var data = {
         thead: controls + dayRow,
@@ -113,6 +175,12 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     },
 
 
+    /**
+     * Returns the month and year to be displayed in the calendar controls
+     *
+     * @param date {Date} date to be displayed
+     * @return {Map} map containing the month and year
+     */
     _getControlsData : function(date) {
       return {
         month: this.getConfig("monthNames")[date.getMonth()],
@@ -120,13 +188,25 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       };
     },
 
-    _getDayRowData : function(date) {
+
+    /**
+     * Returns the week day names to be displayed in the calendar
+     *
+     * @return {String[]} Array of day names
+     */
+    _getDayRowData : function() {
       return {
         row: this.getConfig("dayNames")
       };
     },
 
 
+    /**
+     * Returns the table rows displaying the days of the month
+     *
+     * @param date {Date} date to be displayed
+     * @return {String} the table rows as an HTML string
+     */
     _getWeekRows : function(date) {
       var weeks = [];
       var startOfWeek = 1;

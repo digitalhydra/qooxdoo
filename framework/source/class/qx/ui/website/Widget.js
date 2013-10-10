@@ -1,3 +1,23 @@
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2013 1&1 Internet AG, Germany, http://www.1und1.de
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Martin Wittemann (wittemann)
+     * Daniel Wagner (danielwagner)
+
+************************************************************************ */
+
 /**
  * @require(qx.module.Dataset)
  * @require(qx.module.util.String)
@@ -11,7 +31,6 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * Creates a new collection from the given argument. This can either be an
      * HTML string, a single DOM element or an array of elements
      *
-     * @attachStatic{qxWeb}
      * @param html {String|Element[]} HTML string or DOM element(s)
      * @return {qxWeb} Collection of elements
      */
