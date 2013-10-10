@@ -98,7 +98,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
       this._forEachElementWrapped(function(item) {
         var link = qxWeb.create(
           qxWeb.template.render(
-            item.getTemplate("button"), 
+            item.getTemplate("button"),
             {content: button}
           )
         ).appendTo(item.find("ul"))
@@ -135,6 +135,17 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
       if (pageSelector) {
         show === false ? qxWeb(pageSelector).hide() : qxWeb(pageSelector).show();
       }
+    },
+
+
+    dispose : function() {
+      this._forEachElementWrapped(function(tabs) {
+        tabs.find(".qx-tab-button").offWidget("click", this.__onClick, tabs);
+      });
+
+      this.setHtml("").removeClass("qx-tabs");
+
+      return this.base(arguments);
     }
 
   },
