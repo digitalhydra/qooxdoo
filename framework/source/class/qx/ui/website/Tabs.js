@@ -47,7 +47,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
 
   events : {
-    "changePage" : "qxWeb"
+    "changeSelected" : "Number"
   },
 
 
@@ -77,9 +77,10 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
         content.forEach(function(content, i) {
           tabs.addButton(content, pages[i]);
-          tabs._showPage(tabs.find("ul > li:last-child"), i == selected);
+          tabs._showPage(tabs.find("ul > .qx-tab-button:last-child"), i == selected);
           if (i == selected) {
-            tabs.find("ul > li:last-child").addClass("qx-tab-button-active");
+            tabs.find("ul > .qx-tab-button:first-child").removeClass("qx-tab-button-active");
+            tabs.find("ul > .qx-tab-button:last-child").addClass("qx-tab-button-active");
           }
         });
 
@@ -100,6 +101,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
     addButton : function(button, page) {
       this._forEachElementWrapped(function(item) {
+
         var link = qxWeb.create(
           qxWeb.template.render(
             item.getTemplate("button"),
@@ -108,18 +110,41 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
         ).appendTo(item.find("ul"))
         .onWidget("click", this.__onClick, item)
         .addClass("qx-tab-button");
+        if (item.find("ul .qx-tab-button").length === 1) {
+          link.addClass("qx-tab-button-active");
+        }
 
         if (page) {
           link.setData("qx-tab-page", page);
           this._showPage(link, false);
         }
       }, this);
+
+      return this;
+    },
+
+
+    select : function(index) {
+      this._forEachElementWrapped(function(tabs) {
+        var buttons = tabs.find("ul .qx-tab-button").removeClass("qx-tab-button-active")
+        ._forEachElementWrapped(function(button) {
+          tabs._showPage(button, false);
+        });
+        if (this.getConfig("align") == "right") {
+          index = buttons.length -1 - index;
+        }
+        var selected = buttons.eq(index).addClass("qx-tab-button-active");
+        tabs._showPage(selected);
+        tabs.emit("changeSelected", index);
+      });
+
+      return this;
     },
 
 
     __onClick : function(e) {
       this._forEachElementWrapped(function(tabs) {
-        var buttons = tabs.find("ul > li");
+        var buttons = tabs.find("ul > .qx-tab-button");
         var selected;
         buttons._forEachElementWrapped(function(button) {
           tabs._showPage(button, false);
@@ -130,6 +155,11 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
         });
         tabs._showPage(selected);
         selected.addClass("qx-tab-button-active");
+        var index = buttons.indexOf(selected[0]);
+        if (this.getConfig("align") == "right") {
+          index = buttons.length - 1 - index;
+        }
+        tabs.emit("changeSelected", index);
       });
     },
 
