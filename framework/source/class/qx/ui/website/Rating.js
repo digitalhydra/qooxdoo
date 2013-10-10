@@ -15,7 +15,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
     this._forEachElementWrapped(function(rating) {
       for (var i = 0; i < this.getConfig("length"); i++) {
-        q.create("<span>" + this.getConfig("symbol") + "</span>").appendTo(rating);
+        qxWeb.create("<span>" + this.getConfig("symbol") + "</span>").appendTo(rating);
       }
 
       rating.getChildren("span")
@@ -51,8 +51,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
     render : function() {
       var length = this.getConfig("length");
-      this.forEach(function(el) {
-        el = q(el);
+      this._forEachElementWrapped(function(el) {
         var children = el.getChildren();
         children.setHtml(this.getConfig("symbol"));
         var diff = length - children.length;
@@ -71,7 +70,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
 
     __onClick : function(e) {
-      var parents = q(e.getTarget()).getParents();
+      var parents = qxWeb(e.getTarget()).getParents();
       this.setValue(parents.getChildren().indexOf(e.getTarget()) + 1);
     },
 

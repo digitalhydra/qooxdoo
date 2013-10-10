@@ -5,18 +5,18 @@ qx.Bootstrap.define("qx.ui.website.Button", {
     this.base(arguments, selector, context);
 
     this.forEach(function(button) {
-      button = q(button);
+      button = qxWeb(button);
 
       if (!button.hasClass("qx-button")) {
         button.addClass("qx-button");
       }
 
       if (button.getChildren("span") == 0) {
-        q.create("<span>").appendTo(button);
+        qxWeb.create("<span>").appendTo(button);
       }
 
       if (button.getChildren("img") == 0) {
-        q.create("<img>").appendTo(button).setStyle("display", "none");
+        qxWeb.create("<img>").appendTo(button).setStyle("display", "none");
       }
     });
   },
@@ -47,7 +47,7 @@ qx.Bootstrap.define("qx.ui.website.Button", {
       this.on("click", function(e) {
         menu.placeTo(this, "bottom-left");
         menu.show();
-        q(document).once("click", function() {
+        qxWeb(document).once("click", function() {
           menu.hide();
         });
         e.stopPropagation();

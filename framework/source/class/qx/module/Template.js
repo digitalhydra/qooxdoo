@@ -100,7 +100,7 @@ qx.Bootstrap.define("qx.module.Template", {
      * @return {Element} Original element or wrapper
      */
     __wrap : function(el) {
-      if (q.isTextNode(el)) {
+      if (qxWeb.isTextNode(el)) {
         var wrapper = document.createElement("span");
         wrapper.appendChild(el);
         el = wrapper;
