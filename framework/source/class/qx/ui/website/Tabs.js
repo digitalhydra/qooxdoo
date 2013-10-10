@@ -67,8 +67,8 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           li.remove();
         });
 
-        var toRight = this.getConfig("align") == "right" && !tabs.find("ul").hasClass("qx-tab-button-right");
-        var fromRight = this.getConfig("align") != "right" && tabs.find("ul").hasClass("qx-tab-button-right");
+        var toRight = this.getConfig("align") == "right" && !tabs.find("ul").hasClass("qx-tabs-right");
+        var fromRight = this.getConfig("align") != "right" && tabs.find("ul").hasClass("qx-tabs-right");
         if (toRight || fromRight) {
           content.reverse();
           pages.reverse();
@@ -83,14 +83,14 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           }
         });
 
-        tabs.find("ul").removeClasses(["qx-tab-button-justify", "qx-tab-button-right"]);
+        tabs.find("ul").removeClasses(["qx-tabs-justify", "qx-tabs-right"]);
 
         var align = tabs.getConfig("align");
         if (align == "justify") {
-          tabs.find("ul").addClass("qx-tab-button-justify");
+          tabs.find("ul").addClass("qx-tabs-justify");
 
         } else if (align == "right") {
-          tabs.find("ul").addClass("qx-tab-button-right");
+          tabs.find("ul").addClass("qx-tabs-right");
         }
       });
 

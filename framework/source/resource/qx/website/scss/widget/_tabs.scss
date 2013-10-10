@@ -67,7 +67,7 @@
   color: $highlight-color-disabled;
 }
 
-.qx-tab-button-justify > li {
+.qx-tabs-justify > li {
   display: table-cell;
   width: 1%;
   text-align: center;
@@ -76,10 +76,10 @@
   position: relative;
   top: 1px;
 }
-.qx-tab-button-justify > .qx-tab-button-active {
+.qx-tabs-justify > .qx-tab-button-active {
   border-bottom: 1px solid $background-color;
 }
 
-.qx-tab-button-right > li {
+.qx-tabs-right > li {
   float: right;
 }
