@@ -298,6 +298,19 @@ qx.Bootstrap.define("qxWeb", {
 
 
     /**
+     * Calls the browser's native debugger to easily allow debugging within
+     * chained calls.
+     *
+     * @return {q} The collection for chaining
+     * @ignore(debugger)
+     */
+    debugger : function() {
+      debugger;
+      return this;
+    },
+
+
+    /**
      * Calls a function for each DOM element node in the collection. This is used
      * for DOM manipulations which can't be applied to document nodes or window
      * objects.
