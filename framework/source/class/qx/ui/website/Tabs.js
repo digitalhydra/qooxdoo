@@ -27,9 +27,8 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
       var buttons = tabs.find("ul > li");
       buttons.addClass("qx-tab-button")._forEachElementWrapped(function(button) {
-        tabs._showPage(button, false);
+        tabs._getPage(button).hide();
         button.onWidget("click", this.__onClick, tabs);
-
 
         var pageSelector = button.getData("qx-tab-page");
         if (pageSelector) {
@@ -47,7 +46,8 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
 
   events : {
-    "changeSelected" : "Number"
+    "changeSelected" : "Number",
+    "changePage" : "Map"
   },
 
 
@@ -77,10 +77,13 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
         content.forEach(function(content, i) {
           tabs.addButton(content, pages[i]);
-          tabs._showPage(tabs.find("ul > .qx-tab-button:last-child"), i == selected);
+          var page = tabs._getPage(tabs.find("ul > .qx-tab-button:last-child"));
           if (i == selected) {
             tabs.find("ul > .qx-tab-button:first-child").removeClass("qx-tab-button-active");
             tabs.find("ul > .qx-tab-button:last-child").addClass("qx-tab-button-active");
+            page.show();
+          } else {
+            page.hide();
           }
         });
 
@@ -116,7 +119,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
         if (page) {
           link.setData("qx-tab-page", page);
-          this._showPage(link, false);
+          this._getPage(link).hide();
         }
       }, this);
 
@@ -126,15 +129,12 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
     select : function(index) {
       this._forEachElementWrapped(function(tabs) {
-        var buttons = tabs.find("ul .qx-tab-button").removeClass("qx-tab-button-active")
-        ._forEachElementWrapped(function(button) {
-          tabs._showPage(button, false);
-        });
+        var oldButton = tabs.find("ul .qx-tab-button-active").removeClass("qx-tab-button-active");
         if (this.getConfig("align") == "right") {
           index = buttons.length -1 - index;
         }
-        var selected = buttons.eq(index).addClass("qx-tab-button-active");
-        tabs._showPage(selected);
+        var newButton = tabs.find("ul .qx-tab-button").eq(index).addClass("qx-tab-button-active");
+        tabs._showPage(newButton, oldButton);
         tabs.emit("changeSelected", index);
       });
 
@@ -144,18 +144,16 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
     __onClick : function(e) {
       this._forEachElementWrapped(function(tabs) {
-        var buttons = tabs.find("ul > .qx-tab-button");
-        var selected;
-        buttons._forEachElementWrapped(function(button) {
-          tabs._showPage(button, false);
-          button.removeClass("qx-tab-button-active");
+        var oldButton = tabs.find("ul > .qx-tab-button-active").removeClass("qx-tab-button-active");
+        var newButton;
+        var buttons = tabs.find("ul > .qx-tab-button")._forEachElementWrapped(function(button) {
           if (e.getCurrentTarget() === button[0]) {
-            selected = button;
+            newButton = button;
           }
         });
-        tabs._showPage(selected);
-        selected.addClass("qx-tab-button-active");
-        var index = buttons.indexOf(selected[0]);
+        tabs._showPage(newButton, oldButton);
+        newButton.addClass("qx-tab-button-active");
+        var index = buttons.indexOf(newButton[0]);
         if (this.getConfig("align") == "right") {
           index = buttons.length - 1 - index;
         }
@@ -164,11 +162,32 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     },
 
 
-    _showPage : function(button, show) {
-      var pageSelector = button.getData("qx-tab-page");
-      if (pageSelector) {
-        show === false ? qxWeb(pageSelector).hide() : qxWeb(pageSelector).show();
+    _showPage : function(newButton, oldButton) {
+      if (this.hasListener("changePage")) {
+        this.emit("changePage", {
+          "new" : this._getPage(newButton),
+          "old" : this._getPage(oldButton)
+        });
+      } else {
+        this.changePage(this._getPage(newButton), this._getPage(oldButton));
       }
+    },
+
+
+    _getPage : function(button) {
+      var pageSelector;
+      if (button) {
+        pageSelector = button.getData("qx-tab-page");
+      }
+      return qxWeb(pageSelector);
+    },
+
+
+    changePage : function(newPage, oldPage) {
+      if (oldPage) {
+        oldPage.hide();
+      }
+      newPage.show();
     },
 
 
