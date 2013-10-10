@@ -129,11 +129,12 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
     select : function(index) {
       this._forEachElementWrapped(function(tabs) {
+        var buttons = tabs.find("ul .qx-tab-button");
         var oldButton = tabs.find("ul .qx-tab-button-active").removeClass("qx-tab-button-active");
         if (this.getConfig("align") == "right") {
           index = buttons.length -1 - index;
         }
-        var newButton = tabs.find("ul .qx-tab-button").eq(index).addClass("qx-tab-button-active");
+        var newButton = buttons.eq(index).addClass("qx-tab-button-active");
         tabs._showPage(newButton, oldButton);
         tabs.emit("changeSelected", index);
       });
