@@ -304,7 +304,7 @@ qx.Bootstrap.define("qxWeb", {
      * @return {q} The collection for chaining
      * @ignore(debugger)
      */
-    debugger : function() {
+    debug : function() {
       debugger;
       return this;
     },
