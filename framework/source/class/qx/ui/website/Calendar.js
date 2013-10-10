@@ -95,7 +95,6 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
     _selectDay : function(e) {
       var day = qxWeb(e.getTarget());
-      var value = this.getValue();
       var newValue = new Date(day.getAttribute("value"));
       this.setValue(newValue);
     },
