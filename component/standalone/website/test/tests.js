@@ -3667,3 +3667,91 @@ testrunner.define({
     this.assertEquals(20, Math.floor(knob.getPosition().left + (knob.getWidth() / 2)));
   }
 });
+
+testrunner.define({
+  classname: "ui.Tabs",
+
+  setUp : testrunner.globalSetup,
+  tearDown : testrunner.globalTeardown,
+
+  testPlainConstructor : function() {
+    var tabs = q("#sandbox").tabs();
+    this.assertTrue(tabs.hasClass("qx-tabs"));
+    this.assertEquals(1, tabs.getChildren().length);
+    this.assertTrue(tabs.getChildren().eq(0).is("ul"));
+    this.assertFalse(tabs.getChildren().eq(0).hasClass("qx-tabs-justify"));
+    this.assertFalse(tabs.getChildren().eq(0).hasClass("qx-tabs-right"));
+  },
+
+  testConstructorWithDom : function() {
+    q("#sandbox").append(q.create("<ul><li data-qx-tab-page='#cont1'><button>Foo</button></li><li data-qx-tab-page='#cont0'><button>Foo</button></li></ul><div id='cont0'>Content0</div><div id='cont1'>Content1</div>"));
+    var tabs = q("#sandbox").tabs();
+    this.assertTrue(tabs.find("ul li.qx-tab-button").length == 2);
+    this.assertTrue(tabs.find("ul li").getFirst().hasClass("qx-tab-button-active"));
+    this.assertEquals("block", tabs.find("#cont1").getStyle("display"));
+    this.assertEquals("none", tabs.find("#cont0").getStyle("display"));
+  },
+
+  testMultipleInstances : function() {
+    var tabs = q("#sandbox").tabs("right");
+    this.assertTrue(q("#sandbox").getChildren().eq(0).hasClass("qx-tabs-right"));
+  },
+
+  testAddButton : function() {
+    var tabs = q("#sandbox").tabs();
+    tabs.addButton("Foo");
+    this.assertEquals(1, tabs.find("ul li button").length);
+    q("#sandbox").append(q.create("<div id='cont'>content</div>"));
+    tabs.addButton("Bar", "#cont");
+    this.assertEquals(2, tabs.find("ul li button").length);
+    this.assertEquals("none", q("#cont").getStyle("display"));
+  },
+
+  testTwoTabs : function() {
+    var tabs = q.create('<div/><div/>').appendTo("#sandbox").tabs();
+    tabs.addButton("Foo");
+    this.assertEquals(2, tabs.find(".qx-tab-button").length);
+  },
+
+  testSelectPage : function() {
+    var tabs = q("#sandbox").tabs();
+    tabs.addButton("Foo").addButton("Bar");
+    this.assertTrue(tabs.find("ul li").getFirst().hasClass("qx-tab-button-active"));
+    this.assertFalse(tabs.find("ul li").eq(1).hasClass("qx-tab-button-active"));
+    tabs.select(1);
+    this.assertFalse(tabs.find("ul li").eq(0).hasClass("qx-tab-button-active"));
+    this.assertTrue(tabs.find("ul li").eq(1).hasClass("qx-tab-button-active"));
+  },
+
+  testChangePage : function() {
+    var tabs = q("#sandbox").tabs();
+    var called = 0;
+    tabs.addButton("Foo").addButton("Bar");
+    tabs.on("changeSelected", function(idx) {
+      called++;
+      this.assertEquals(1, idx);
+    }, this);
+    tabs.select(1);
+    this.assertEquals(1, called);
+  },
+
+  testDispose : function() {
+    var tabs = q("#sandbox").tabs().addButton("Foo").dispose();
+    this.assertNull(tabs.getHtml());
+    this.assertFalse(tabs.hasClass("qx-tabs"));
+  },
+
+  testJustify : function() {
+    var tabs = q("#sandbox").tabs("justify");
+    this.assertTrue(tabs.getChildren().eq(0).hasClass("qx-tabs-justify"));
+    tabs.setConfig("align", "left").render();
+    this.assertFalse(tabs.getChildren().eq(0).hasClass("qx-tabs-justify"));
+  },
+
+  testRight : function() {
+    var tabs = q("#sandbox").tabs("right");
+    this.assertTrue(tabs.getChildren().eq(0).hasClass("qx-tabs-right"));
+    tabs.setConfig("align", "left").render();
+    this.assertFalse(tabs.getChildren().eq(0).hasClass("qx-tabs-right"));
+  }
+});
