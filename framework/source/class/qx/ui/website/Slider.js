@@ -86,6 +86,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         .onWidget("mousedown", slider._onMouseDown, slider)
         .onWidget("dragstart", slider._onDragStart, slider);
       });
+
+      if (!this.getValue()) {
+        var step = this.getConfig("step");
+        var defaultVal= qx.Bootstrap.isArray(step) ? step[0] : this.getConfig("minimum");
+        this.setValue(defaultVal);
+      }
     },
 
 
@@ -128,7 +134,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       if (!qx.Bootstrap.isArray(step) || step.indexOf(value) != -1) {
         this.__valueToPosition(value);
-        this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent())
+        this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent());
         this.emit("changeValue", value);
       }
 
