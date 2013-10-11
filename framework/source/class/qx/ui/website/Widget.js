@@ -63,13 +63,9 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
     },
 
     /**
-     * [offWidget description]
+     * TODOC
      *
      * @attach {qxWeb}
-     * @param  {[type]} type     [description]
-     * @param  {[type]} listener [description]
-     * @param  {[type]} ctx      [description]
-     * @return {[type]}          [description]
      */
     offWidget : function(type, listener, ctx) {
       var propertyName = this.classname.replace(/\./g, "-") + "-context";
@@ -78,6 +74,17 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       this.off(type, listener, originalCtx);
 
       return this;
+    },
+
+    /**
+     * TODOC
+     *
+     * @attachStatic {qxWeb}
+     */
+    initWidgets : function() {
+      qxWeb("*[qx-class]")._forEachElementWrapped(function(widget) {
+        widget.init();
+      });
     }
   },
 
@@ -206,6 +213,9 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
     qxWeb.$attach({
       onWidget : statics.onWidget,
       offWidget : statics.offWidget
+    });
+    qxWeb.$attachStatic({
+      initWidgets : statics.initWidgets
     });
   }
 });
