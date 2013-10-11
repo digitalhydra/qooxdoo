@@ -34,12 +34,6 @@
   transform: $args;
 }
 
-@mixin box-sizing($args) {
-  -webkit-box-sizing: $args;
-  -moz-box-sizing: $args;
-  box-sizing: $args;
-}
-
 @mixin perspective($args) {
   -webkit-perspective: $args;
   -moz-perspective: $args;

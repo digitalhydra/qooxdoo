@@ -23,7 +23,7 @@ $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
   @include background($slider-background);
   top: 26px;
   height: 7px;
-  box-sizing: border-box;
+  @include box-sizing(border-box);
 }
 
 .qx-slider-knob {
