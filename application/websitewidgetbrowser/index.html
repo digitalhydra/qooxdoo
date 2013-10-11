@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>qx.Website Widget Browser</title>
+  <script type="text/javascript" src="script/q-3.1.min.js"></script>
+  <script type="text/javascript" src="widgetbrowser.js"></script>
+  <link href="http://resources.qooxdoo.org/stylesheets/reset.css" rel="stylesheet" type="text/css">
+  <link href="http://resources.qooxdoo.org/stylesheets/base.css" rel="stylesheet" type="text/css">
+  <link href="http://resources.qooxdoo.org/stylesheets/layout.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="../../framework/source/resource/qx/website/css/indigo.css"/>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header-wrapper">
+    <div id="header">
+      <h1>qx.Website Widget Browser</h1>
+    </div>
+    <div class="decoration"></div>
+  </div>
+
+  <div id="content" qx-class="qx.ui.website.Tabs" data-qx-config-align="justify">
+    <div class="disable">
+      <input type="checkbox" id="toggle_disable" />
+      <label for="toggle_disable">Disable Widgets</label>
+    </div>
+    <ul>
+      <li data-qx-tab-page="#button-page"><button>Button</button></li>
+      <li data-qx-tab-page="#calendar-page"><button>Calendar</button></li>
+      <li data-qx-tab-page="#rating-page"><button>Rating</button></li>
+      <li data-qx-tab-page="#slider-page"><button>Slider</button></li>
+      <li data-qx-tab-page="#tabs-page"><button>Tabs</button></li>
+    </ul>
+    <div id="button-page">
+      <h2>Button</h2>
+      <button qx-class="qx.ui.website.Button">Default</button>
+      <button qx-class="qx.ui.website.Button"><span>Image</span><img style="width:14px;height:14px" src="../../framework/source/resource/qx/icon/Tango/16/actions/edit-clear.png"/></button>
+      <button id="menu-button" qx-class="qx.ui.website.Button">Menu</button>
+      <ul id="menu" style="display: none;">
+        <li>abcabcabc</li>
+        <li>defdef</li>
+      </ul>
+    </div>
+    <div id="calendar-page">Calendar</div>
+    <div id="rating-page">Rating</div>
+    <div id="slider-page">Slider</div>
+    <div id="tabs-page">Tabs</div>
+  </div>
+</body>
+</html>

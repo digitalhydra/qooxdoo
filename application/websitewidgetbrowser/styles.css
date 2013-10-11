@@ -1,0 +1,30 @@
+#header {
+  width: auto;
+  padding-left: 15px;
+}
+
+#header h1 {
+  width: auto;
+}
+
+#header-wrapper {
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+#content {
+  margin-top: 82px;
+  padding: 20px;
+}
+
+.disable {
+  float: right;
+  margin-right: 5px;
+}
+
+.disable label,
+.disable input {
+  vertical-align: middle;
+  line-height: 1.2;
+}
