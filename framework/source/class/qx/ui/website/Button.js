@@ -23,26 +23,32 @@ qx.Bootstrap.define("qx.ui.website.Button", {
 
   construct : function(selector, context) {
     this.base(arguments, selector, context);
-
-    this.forEach(function(button) {
-      button = qxWeb(button);
-
-      if (!button.hasClass("qx-button")) {
-        button.addClass("qx-button");
-      }
-
-      if (button.getChildren("span") == 0) {
-        qxWeb.create("<span>").appendTo(button);
-      }
-
-      if (button.getChildren("img") == 0) {
-        qxWeb.create("<img>").appendTo(button).setStyle("display", "none");
-      }
-    });
   },
 
 
   members : {
+
+    init : function() {
+      this.base(arguments);
+
+      this.forEach(function(button) {
+        button = qxWeb(button);
+
+        if (!button.hasClass("qx-button")) {
+          button.addClass("qx-button");
+        }
+
+        if (button.getChildren("span") == 0) {
+          qxWeb.create("<span>").appendTo(button);
+        }
+
+        if (button.getChildren("img") == 0) {
+          qxWeb.create("<img>").appendTo(button).setStyle("display", "none");
+        }
+      });
+    },
+
+
     /**
      * Sets the button's label text
      *

@@ -37,31 +37,6 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
   construct : function(selector, context) {
     this.base(arguments, selector, context);
-
-    this._forEachElementWrapped(function(tabs) {
-      tabs.addClass("qx-tabs");
-
-      if (tabs.getChildren("ul").length === 0) {
-        tabs.append(qxWeb.create("<ul/>"));
-      }
-
-      var buttons = tabs.find("ul > li");
-      buttons.addClass("qx-tab-button")._forEachElementWrapped(function(button) {
-        tabs._getPage(button).hide();
-        button.onWidget("click", this.__onClick, tabs);
-
-        var pageSelector = button.getData("qx-tab-page");
-        if (pageSelector) {
-          qxWeb(pageSelector).addClass("qx-tab-page");
-        }
-      }.bind(this));
-
-      var active = buttons.filter(".qx-tab-button-active");
-      if (active.length == 0) {
-        buttons.eq(0).addClass("qx-tab-button-active");
-      }
-      tabs._showPage(buttons.filter(".qx-tab-button-active"));
-    }.bind(this));
   },
 
 
@@ -72,6 +47,36 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
 
   members : {
+
+    init : function() {
+      this.base(arguments);
+      this._forEachElementWrapped(function(tabs) {
+
+        tabs.addClass("qx-tabs");
+
+        if (tabs.getChildren("ul").length === 0) {
+          tabs.append(qxWeb.create("<ul/>"));
+        }
+
+        var buttons = tabs.getChildren("ul").getFirst().getChildren("li");
+        buttons.addClass("qx-tab-button")._forEachElementWrapped(function(button) {
+          tabs._getPage(button).hide();
+          button.onWidget("click", this.__onClick, tabs);
+
+          var pageSelector = button.getData("qx-tab-page");
+          if (pageSelector) {
+            qxWeb(pageSelector).addClass("qx-tab-page");
+          }
+        }.bind(this));
+
+        var active = buttons.filter(".qx-tab-button-active");
+        if (active.length == 0) {
+          buttons.eq(0).addClass("qx-tab-button-active");
+        }
+        tabs._showPage(buttons.filter(".qx-tab-button-active"));
+      }.bind(this));
+    },
+
     render : function() {
       this._forEachElementWrapped(function(tabs) {
         var content = [];
