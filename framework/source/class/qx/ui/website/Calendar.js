@@ -49,11 +49,6 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
   construct : function(selector, context) {
     this.base(arguments, selector, context);
-
-    this._forEachElementWrapped(function(calendar) {
-      calendar.showValue(new Date());
-      calendar.addClass("qx-calendar");
-    });
   },
 
 
@@ -64,6 +59,16 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
 
 
   members : {
+
+    init : function() {
+      this.base(arguments);
+
+      this._forEachElementWrapped(function(calendar) {
+        calendar.showValue(new Date());
+        calendar.addClass("qx-calendar");
+      });
+    },
+
     /**
      * Re-render the calendar(s), e.g. if templates or config options changed
      *
