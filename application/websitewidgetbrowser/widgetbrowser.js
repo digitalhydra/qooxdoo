@@ -1,5 +1,5 @@
 q.ready(function() {
-  qxWeb.initWidgets();
+  //qxWeb.initWidgets();
 
   var menu = q("#menu").addClass("qx-menu").appendTo(document.body).hide();
   q("#menu-button").setMenu(menu);
@@ -9,8 +9,8 @@ q.ready(function() {
 
 var onDisable = function() {
   var enabled = !this.getAttribute("checked");
-  var selector = q("#content > ul > .qx-tab-button-active").getData("qx-tab-page");
-  q(selector).getChildren("*[qx-class]")._forEachElementWrapped(function(widget) {
-    widget.setEnabled(enabled);
+  q("#content > ul > .qx-tab-button")._forEachElementWrapped(function(button) {
+    var selector = button.getData("qx-tab-page");
+    q(selector).getChildren("*[qx-class]").setEnabled(enabled);
   });
 };
