@@ -45,6 +45,7 @@ q.ready(function() {
   var menu = q("#menu").addClass("qx-menu").appendTo(document.body).hide();
   q("#menu-button").setMenu(menu);
 
+  q("div[qx-class='qx.ui.website.Rating']").setValue(2);
 
   // select tab by URL hash or select the tabs widget's default
   setTimeout(function() {
