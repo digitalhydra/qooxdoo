@@ -146,15 +146,13 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     render : function() {
       var step = this.getConfig("step");
       if (qx.Bootstrap.isArray(step)) {
-        this._getPixels(true);
+        this._getPixels();
         if (step.indexOf(this.getValue()) == -1) {
           this.setValue(step[0]);
         }
       } else if (qx.Bootstrap.getClass(step) == "Number") {
-        this.setProperty("stepsToPixels", null);
         this.setValue(Math.round(this.getValue() / step) * step);
       } else {
-        this.setProperty("stepsToPixels", null);
         this.setValue(this.getValue());
       }
       this.getChildren(".qx-slider-knob").setHtml(this._getKnobContent());
@@ -190,15 +188,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      * Creates a lookup table to get the pixel values for each slider step.
      * And computes the "breakpoint" between two steps in pixel.
      */
-    _getPixels : function(refresh)
+    _getPixels : function()
     {
-      if (this.getProperty("stepsToPixels") && !refresh) {
-        return this.getProperty("stepsToPixels");
-      }
-
       var step = this.getConfig("step");
       if (!qx.Bootstrap.isArray(step)) {
-        this.setProperty("stepsToPixels", null);
         return [];
       }
 
@@ -226,7 +219,6 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       // Last pixel value is fixed
       pixel.push(dragBoundaries.max);
 
-      this.setProperty("stepsToPixels", pixel);
       return pixel;
     },
 
@@ -382,7 +374,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     _onWindowResize : function() {
       var value = this.getProperty("value");
       if (qx.Bootstrap.isArray(this.getConfig("step"))) {
-        this._getPixels(true);
+        this._getPixels();
       }
       this.__valueToPosition(value);
     },
