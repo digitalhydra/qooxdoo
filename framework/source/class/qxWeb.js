@@ -298,6 +298,31 @@ qx.Bootstrap.define("qxWeb", {
 
 
     /**
+     * Returns the index of the given element within the current
+     * collection or -1 if the element is not in the collection
+     * @param elem {Element|Element[]|qxWeb} Element or collection of elements
+     * @return {Number} The element's index
+     */
+    indexOf : function(elem) {
+      if (!elem) {
+        return -1;
+      }
+
+      if (qx.Bootstrap.isArray(elem)) {
+        elem = elem[0];
+      }
+
+      for (var i=0, l=this.length; i<l; i++) {
+        if (this[i] === elem) {
+          return i;
+        }
+      }
+
+      return -1;
+    },
+
+
+    /**
      * Calls the browser's native debugger to easily allow debugging within
      * chained calls.
      *
