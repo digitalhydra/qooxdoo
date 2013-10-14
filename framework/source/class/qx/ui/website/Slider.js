@@ -85,6 +85,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         .setHtml(slider._getKnobContent())
         .onWidget("mousedown", slider._onMouseDown, slider)
         .onWidget("dragstart", slider._onDragStart, slider);
+        slider.render();
       });
 
       if (!this.getValue()) {
