@@ -61,12 +61,16 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
   members : {
 
     init : function() {
-      this.base(arguments);
+      if (!this.base(arguments)) {
+        return false;
+      }
 
       this._forEachElementWrapped(function(calendar) {
         calendar.showValue(new Date());
         calendar.addClass("qx-calendar");
       });
+
+      return true;
     },
 
     /**
@@ -268,6 +272,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
     qxWeb.$attach({
       calendar : function(date) {
         var calendar =  new qx.ui.website.Calendar(this);
+        calendar.init();
 
         if (date != undefined) {
           calendar.setValue(date);

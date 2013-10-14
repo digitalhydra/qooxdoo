@@ -44,18 +44,21 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
   members : {
 
     init : function() {
-      this.base(arguments);
+      if (!this.base(arguments)) {
+        return false;
+      }
+
+      this._updateSymbolLength();
 
       this._forEachElementWrapped(function(rating) {
-        for (var i = 0; i < this.getConfig("length"); i++) {
-          qxWeb.create("<span>" + this.getConfig("symbol") + "</span>").appendTo(rating);
-        }
-
         rating.getChildren("span")
           .addClasses(["qx-rating", "qx-rating-off"])
           .onWidget("click", this.__onClick, rating);
       }.bind(this));
+
+      return true;
     },
+
 
     setValue : function(value) {
       this._forEachElementWrapped(function(rating) {
@@ -74,6 +77,11 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
 
     render : function() {
+      this._updateSymbolLength();
+    },
+
+
+    _updateSymbolLength : function() {
       var length = this.getConfig("length");
       this._forEachElementWrapped(function(el) {
         var children = el.getChildren();
@@ -81,11 +89,16 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
         var diff = length - children.length;
         if (diff > 0) {
           for (var i = 0; i < diff; i++) {
-            children.getLast().clone(true).appendTo(el);
+            qxWeb.create("<span>" + this.getConfig("symbol") + "</span>")
+            .onWidget("click", el.__onClick, el)
+            .addClass("qx-rating")
+            .appendTo(el);
           }
         } else {
           for (var i = 0; i < Math.abs(diff); i++) {
-            el.getChildren().getLast().remove();
+            el.getChildren().getLast()
+            .offWidget("click", el.__onClick, el)
+            .remove();
           }
         }
       }.bind(this));
@@ -113,6 +126,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
     qxWeb.$attach({
       rating : function(initValue, symbol, length) {
         var rating =  new qx.ui.website.Rating(this);
+        rating.init();
 
         var modified = false;
         if (length != undefined && length != rating.getConfig("length")) {

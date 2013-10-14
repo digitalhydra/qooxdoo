@@ -92,16 +92,20 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
   construct : function(selector, context) {
     var col = this.base(arguments, selector, context);
     Array.prototype.push.apply(this, Array.prototype.slice.call(col, 0, col.length));
-    this.init();
   },
 
 
   members : {
     init : function() {
+      if (this.getProperty("$$qx-widget-initialized")) {
+        return false;
+      }
       this.setAttribute("qx-class", this.classname);
       if (!this.hasClass("qx-widget")) {
         this.addClass("qx-widget");
       }
+      this.setProperty("$$qx-widget-initialized", true);
+      return true;
     },
 
 
@@ -199,6 +203,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       this.removeAttribute("qx-class");
       this.setProperty("config", undefined);
       this.setProperty("templates", undefined);
+      this.setProperty("$$qx-widget-initialized", undefined);
       this.removeClass("qx-widget");
 
       for (var name in this.constructor.$$events) {

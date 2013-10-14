@@ -59,10 +59,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
 
     init : function() {
-      this.base(arguments);
-
-      if (this.length === 0) {
-        return;
+      if (!this.base(arguments)) {
+        return false;
       }
 
       this.addClass("qx-slider");
@@ -93,6 +91,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         var defaultVal= qx.Bootstrap.isArray(step) ? step[0] : this.getConfig("minimum");
         this.setValue(defaultVal);
       }
+
+      return true;
     },
 
 
@@ -442,6 +442,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     qxWeb.$attach({
       slider : function(value, step) {
         var slider = new qx.ui.website.Slider(this);
+        slider.init();
         if (typeof step !== "undefined") {
           slider.setConfig("step", step);
         }

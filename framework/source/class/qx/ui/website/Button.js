@@ -29,11 +29,11 @@ qx.Bootstrap.define("qx.ui.website.Button", {
   members : {
 
     init : function() {
-      this.base(arguments);
+      if (!this.base(arguments)) {
+        return false;
+      }
 
-      this.forEach(function(button) {
-        button = qxWeb(button);
-
+      this._forEachElementWrapped(function(button) {
         if (!button.hasClass("qx-button")) {
           button.addClass("qx-button");
         }
@@ -46,6 +46,8 @@ qx.Bootstrap.define("qx.ui.website.Button", {
           qxWeb.create("<img>").appendTo(button).setStyle("display", "none");
         }
       });
+
+      return true;
     },
 
 
@@ -108,6 +110,7 @@ qx.Bootstrap.define("qx.ui.website.Button", {
     qxWeb.$attach({
       button : function(label, icon) {
         var buttons = new qx.ui.website.Button(this);
+        buttons.init();
         if (label != null) {
           buttons.setLabel(label);
         }

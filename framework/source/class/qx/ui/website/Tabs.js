@@ -49,7 +49,10 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
   members : {
 
     init : function() {
-      this.base(arguments);
+      if (!this.base(arguments)) {
+        return false;
+      }
+
       this._forEachElementWrapped(function(tabs) {
 
         tabs.addClass("qx-tabs");
@@ -75,6 +78,8 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
         }
         tabs._showPage(buttons.filter(".qx-tab-button-active"));
       }.bind(this));
+
+      return true;
     },
 
     render : function() {
@@ -234,6 +239,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     qxWeb.$attach({
       tabs : function(align) {
         var tabs =  new qx.ui.website.Tabs(this);
+        tabs.init();
         if (align) {
           tabs.setConfig("align", align);
           tabs.render();
