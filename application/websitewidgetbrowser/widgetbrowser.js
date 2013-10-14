@@ -47,6 +47,11 @@ q.ready(function() {
 
   q("div[qx-class='qx.ui.website.Rating']").setValue(2);
 
+  q("#tabs-page select").on("change", function(e) {
+    var val = e.getTarget().value;
+    q("#tabs-page .qx-tabs").setConfig("align", val).render();
+  });
+
   // select tab by URL hash or select the tabs widget's default
   setTimeout(function() {
     var selected;
