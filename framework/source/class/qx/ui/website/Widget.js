@@ -167,7 +167,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
         item = this.getData(attribName);
 
         // not defined HTML attributes result in 'null' values
-        if (!this[0].dataset && item === null) {
+        if (!this[0] || (!this[0].dataset && item === null)) {
           item = undefined;
         }
 
