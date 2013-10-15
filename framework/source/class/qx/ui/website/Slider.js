@@ -176,10 +176,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
     _getDragBoundaries : function()
     {
+      var paddingLeft = parseInt(this.getStyle("paddingLeft") || 0);
+      var paddingRight = parseInt(this.getStyle("paddingRight") || 0);
       var offset = this.getConfig("offset");
       return {
-        min : this.getOffset().left + offset,
-        max : this.getOffset().left + this.getWidth() - offset
+        min : this.getOffset().left + offset + paddingLeft,
+        max : this.getOffset().left + this.getWidth() - offset - paddingRight
       };
     },
 
@@ -203,8 +205,11 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       var lastIndex = step.length-1;
 
+      var paddingLeft = parseInt(this.getStyle("paddingLeft") || 0);
+      var paddingRight = parseInt(this.getStyle("paddingRight") || 0);
+
       //The width really used by the slider (drag area)
-      var usedWidth = this.getWidth() - (this.getConfig("offset") * 2);
+      var usedWidth = this.getWidth() - (this.getConfig("offset") * 2) - paddingLeft - paddingRight;
 
       //The width of a single slider step
       var stepWidth = usedWidth/(step[lastIndex] - step[0]);
@@ -332,7 +337,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       if (this.__dragMode) {
         var dragPosition = e.getDocumentLeft();
         var dragBoundaries = this._getDragBoundaries();
-        var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth();
+        var paddingLeft = parseInt(this.getStyle("paddingLeft") || 0);
+        var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth() - paddingLeft;
 
         if (dragPosition >= dragBoundaries.min && dragPosition <= dragBoundaries.max) {
           this.setValue(this.__getNearestValue(dragPosition));
@@ -389,16 +395,17 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     __valueToPosition : function(value)
     {
       var pixels = this._getPixels();
+      var paddingLeft = parseInt(this.getStyle("paddingLeft") || 0);
       var valueToPixel;
       if (pixels.length > 0) {
         // Get the pixel value of the current step value
-        valueToPixel = pixels[this.getConfig("step").indexOf(value)];
+        valueToPixel = pixels[this.getConfig("step").indexOf(value)] - paddingLeft;
       } else {
         var dragBoundaries = this._getDragBoundaries();
         var availableWidth = dragBoundaries.max - dragBoundaries.min;
         var range = this.getConfig("maximum") - this.getConfig("minimum");
         var fraction = (value - this.getConfig("minimum")) / range;
-        valueToPixel = (availableWidth * fraction) + dragBoundaries.min;
+        valueToPixel = (availableWidth * fraction) + dragBoundaries.min - paddingLeft;
       }
 
       // relative position is necessary here
