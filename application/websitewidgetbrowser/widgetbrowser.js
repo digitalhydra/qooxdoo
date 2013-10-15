@@ -26,31 +26,47 @@ q.ready(function() {
       q("#content").select(index);
     }
   };
+
+
+  var loadDemo = function(demo) {
+    q.io.xhr("demo/" + demo + ".html").on("load", function(xhr) {
+      if (xhr.status == 200) {
+        var pageSelector = q("#content").find("> ul > .qx-tab-button-active").getData("qxTabPage");
+        q(pageSelector).setHtml(xhr.responseText);
+        q.io.script("demo/" + demo + ".js").send();
+      }
+      else {
+        console.error("Could not load demo: ", xhr.status, xhr.statusText);
+      }
+    }).send();
+  };
+
+
   /**
    * Set the title of the tab with the given index as URL hash
    * @param index {Number} tab index
    */
   var onChangeSelected = function(index) {
-    var buttonText = q("#content > ul > .qx-tab-button").eq(index).getChildren("button").getHtml();
+    var button = q("#content > ul > .qx-tab-button").eq(index);
+    var buttonText = button.getChildren("button").getHtml();
     location.hash = buttonText;
+
+    var demoPageSelector = button.getData("qxTabPage");
+    if (q(demoPageSelector).getChildren(".demo-container").length > 0) {
+      return;
+    }
+    var demoName = demoPageSelector.match(/#(.*?)-/)[1];
+    loadDemo(demoName);
   };
 
 
   qxWeb.initWidgets();
+
   q("#content")
-  .on("changeSelected", onChangeSelected)
+  .on("changeSelected", onChangeSelected);
+
   q(".disable input").on("change", onDisable);
 
-
-  var menu = q("#menu").addClass("qx-menu").appendTo(document.body).hide();
-  q("#menu-button").setMenu(menu);
-
-  q("div[qx-class='qx.ui.website.Rating']").setValue(2);
-
-  q("#tabs-page select").on("change", function(e) {
-    var val = e.getTarget().value;
-    q("#tabs-page .qx-tabs").setConfig("align", val).render();
-  });
 
   // select tab by URL hash or select the tabs widget's default
   setTimeout(function() {

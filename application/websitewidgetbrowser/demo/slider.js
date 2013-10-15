@@ -1,0 +1,1 @@
+q.initWidgets("#demo-slider");

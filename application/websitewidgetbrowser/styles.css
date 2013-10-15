@@ -29,7 +29,22 @@
   line-height: 1.2;
 }
 
-
 .demo-options {
   margin: 10px;
+}
+
+.demo-container {
+  display: table;
+}
+
+.demo-cell {
+  display: table-cell;
+  width: 1%;
+  text-align: left;
+  float: none;
+  padding-right: 40px;
+}
+
+.demo-cell-left {
+  width: auto;
 }
