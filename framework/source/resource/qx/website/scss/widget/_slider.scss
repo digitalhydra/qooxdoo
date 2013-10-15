@@ -60,3 +60,7 @@ $slider-knob-background-active : darken(#F7F7F7, 25%), darken(#E8E8E8, 25%);
   @include background($slider-knob-background-disabled);
   color: lighten($slider-border, 25%);
 }
+
+.qx-slider-knob:focus {
+  outline: none;
+}
