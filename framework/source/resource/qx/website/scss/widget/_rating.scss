@@ -3,7 +3,7 @@ $rating-background-disabled: 270deg, desaturate(#E3B64A, 100%), desaturate(#D577
 $rating-background-off: 270deg, #eee, #cfcfcf;
 $rating-color-off: #cfcfcf;
 
-.qx-rating {
+.qx-rating-item {
   font-size: 22px;
   background-image: -webkit-linear-gradient($rating-background);
   color: #E3B64A;
@@ -14,7 +14,7 @@ $rating-color-off: #cfcfcf;
   cursor: pointer;
 }
 
-.qx-rating.qx-rating-off {
+.qx-rating-item.qx-rating-item-off {
   background-image: -webkit-linear-gradient($rating-background-off);
   color: $rating-color-off;
   @include background-clip(text);
@@ -22,12 +22,12 @@ $rating-color-off: #cfcfcf;
   -webkit-text-stroke: 1px $rating-color-off;
 }
 
-.qx-rating[disabled] {
+.qx-rating-item[disabled] {
   background-image: -webkit-linear-gradient($rating-background-disabled);
   -webkit-text-stroke: 1px desaturate(#BB6718, 100%);
 }
 
-.qx-rating.qx-rating-off[disabled] {
+.qx-rating-item.qx-rating-item-off[disabled] {
   background-image: -webkit-linear-gradient($rating-background-off);
   -webkit-text-stroke: 1px desaturate($rating-color-off, 100%);
   color: $rating-color-off;

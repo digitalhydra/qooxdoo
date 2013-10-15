@@ -51,8 +51,9 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
       this._updateSymbolLength();
 
       this._forEachElementWrapped(function(rating) {
-        rating.getChildren("span")
-          .addClasses(["qx-rating", "qx-rating-off"])
+        rating.addClass("qx-rating")
+        .getChildren("span")
+          .addClasses(["qx-rating-item", "qx-rating-item-off"])
           .onWidget("click", this.__onClick, rating);
       }.bind(this));
 
@@ -63,8 +64,8 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
     setValue : function(value) {
       this._forEachElementWrapped(function(rating) {
         var children = rating.getChildren("span");
-        children.removeClass("qx-rating-off");
-        children.slice(value, children.length).addClass("qx-rating-off");
+        children.removeClass("qx-rating-item-off");
+        children.slice(value, children.length).addClass("qx-rating-item-off");
         rating.emit("changeValue", rating.getValue());
       });
       return this;
@@ -72,7 +73,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
 
     getValue : function() {
-      return this.eq(0).getChildren("span").not(".qx-rating-off").length;
+      return this.eq(0).getChildren("span").not(".qx-rating-item-off").length;
     },
 
 
@@ -91,7 +92,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
           for (var i = 0; i < diff; i++) {
             qxWeb.create("<span>" + this.getConfig("symbol") + "</span>")
             .onWidget("click", el.__onClick, el)
-            .addClass("qx-rating")
+            .addClass("qx-rating-item")
             .appendTo(el);
           }
         } else {
