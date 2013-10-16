@@ -233,7 +233,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     * @param position {Integer} The current knob position in pixels
     * @return {Integer} The next position to snap to
     */
-    __getNearestValue : function(position) {
+    _getNearestValue : function(position) {
       var pixels = this._getPixels();
       if (pixels.length === 0) {
 
@@ -280,7 +280,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
      * @param e {qx.event.Emitter} Incoming event object
      */
     _onClick : function(e) {
-      this.setValue(this.__getNearestValue(e.getDocumentLeft()));
+      this.setValue(this._getNearestValue(e.getDocumentLeft()));
     },
 
 
@@ -341,7 +341,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         var positionKnob = dragPosition - this.getOffset().left - this._getHalfKnobWidth() - paddingLeft;
 
         if (dragPosition >= dragBoundaries.min && dragPosition <= dragBoundaries.max) {
-          this.setValue(this.__getNearestValue(dragPosition));
+          this.setValue(this._getNearestValue(dragPosition));
           if (positionKnob > 0) {
             this._setKnobPosition(positionKnob);
             this.emit("changePosition", positionKnob);

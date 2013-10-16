@@ -3665,6 +3665,46 @@ testrunner.define({
     var slider = q("#sandbox").slider().setConfig("offset", 20).render();
     var knob = slider.getChildren(".qx-slider-knob");
     this.assertEquals(20, Math.floor(knob.getPosition().left + (knob.getWidth() / 2)));
+  },
+
+  testDragBoundaries : function() {
+    var slider = q("#sandbox").slider()
+    .setStyles({
+      position: "fixed",
+      left: 0,
+      top: 0,
+      width: "500px"
+    });
+
+    this.assertEquals(parseInt(slider.getStyle("paddingLeft")), slider._getDragBoundaries().min);
+    this.assertEquals(slider.getWidth() - parseInt(slider.getStyle("paddingRight")), slider._getDragBoundaries().max);
+
+    var offset = 10;
+    slider.setConfig("offset", offset).render();
+
+    var expectedMin = parseInt(slider.getStyle("paddingLeft")) + offset;
+    var expectedMax = slider.getWidth() - parseInt(slider.getStyle("paddingRight")) - offset;
+    this.assertEquals(expectedMin, slider._getDragBoundaries().min);
+    this.assertEquals(expectedMax, slider._getDragBoundaries().max);
+  },
+
+  testNearestValue : function() {
+    var slider = q("#sandbox").slider()
+    .setStyles({
+      position: "fixed",
+      left: 0,
+      top: 0,
+      width: "500px"
+    });
+
+    this.assertEquals(0, slider._getNearestValue(0));
+    this.assertEquals(50, slider._getNearestValue(slider.getWidth() / 2));
+    this.assertEquals(100, slider._getNearestValue(slider.getWidth()));
+
+    slider.setConfig("step", [1, 2, 3, 4, 5, 6, 7]).render();
+    this.assertEquals(1, slider._getNearestValue(0));
+    this.assertEquals(4, slider._getNearestValue(slider.getWidth() / 2));
+    this.assertEquals(7, slider._getNearestValue(slider.getWidth()));
   }
 });
 
