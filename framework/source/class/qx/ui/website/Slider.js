@@ -82,7 +82,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         })
         .setHtml(slider._getKnobContent())
         .onWidget("mousedown", slider._onMouseDown, slider)
-        .onWidget("dragstart", slider._onDragStart, slider);
+        .onWidget("dragstart", slider._onDragStart, slider)
+        .onWidget("focus", slider._onFocus, slider)
+        .onWidget("blur", slider._onBlur, slider);
         slider.render();
       });
 
@@ -359,6 +361,54 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     },
 
 
+    _onFocus : function(e) {
+      qxWeb(document.documentElement).onWidget("keydown", this._onKeyDown, this);
+    },
+
+
+    _onBlur : function(e) {
+      qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
+    },
+
+
+    _onKeyDown : function(e) {
+      var newValue;
+      var currentValue = this.getValue();
+      var step = this.getConfig("step");
+      var stepType = qx.Bootstrap.getClass(step);
+      var key = e.getKeyIdentifier();
+
+      if (key == "Right") {
+        if (stepType === "Array") {
+          var idx = step.indexOf(currentValue);
+          if (idx !== undefined) {
+            newValue = step[idx + 1] || currentValue;
+          }
+        } else if (stepType === "Number") {
+          newValue = currentValue + step;
+        }
+        else {
+          newValue = currentValue + 1;
+        }
+      }
+      else if (key == "Left") {
+        if (stepType === "Array") {
+          var idx = step.indexOf(currentValue);
+          if (idx !== undefined) {
+            newValue = step[idx - 1] || currentValue;
+          }
+        } else if (stepType === "Number") {
+          newValue = currentValue - step;
+        }
+        else {
+          newValue = currentValue - 1;
+        }
+      }
+
+      this.setValue(newValue);
+    },
+
+
     /**
     * Applies the horizontal position
     * @param x {Integer} the position to move to
@@ -422,9 +472,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         slider.offWidget("click", slider._onClick, slider);
         slider.getChildren(".qx-slider-knob")
         .offWidget("mousedown", slider._onMouseDown, slider)
-        .offWidget("dragstart", slider._onDragStart, slider);
+        .offWidget("dragstart", slider._onDragStart, slider)
+        .offWidget("focus", slider._onFocus, slider)
+        .offWidget("blur", slider._onBlur, slider);
 
-        qxWeb(document.documentElement).offWidget("mouseup", slider._onMouseUp, slider);
+        qxWeb(document.documentElement).offWidget("mouseup", slider._onMouseUp, slider)
+        .offWidget("keydown", slider._onKeyDown, slider);
         qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
       });
 
