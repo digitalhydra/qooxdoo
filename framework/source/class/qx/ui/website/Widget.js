@@ -82,7 +82,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * @attachStatic {qxWeb}
      */
     initWidgets : function() {
-      qxWeb("*[qx-class]")._forEachElementWrapped(function(widget) {
+      qxWeb("*[data-qx-class]")._forEachElementWrapped(function(widget) {
         widget.init();
       });
     }
@@ -100,7 +100,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       if (this.getProperty("$$qx-widget-initialized")) {
         return false;
       }
-      this.setAttribute("qx-class", this.classname);
+      this.setAttribute("data-qx-class", this.classname);
       if (!this.hasClass("qx-widget")) {
         this.addClass("qx-widget");
       }
@@ -200,7 +200,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
 
 
     dispose : function() {
-      this.removeAttribute("qx-class");
+      this.removeAttribute("data-qx-class");
       this.setProperty("config", undefined);
       this.setProperty("templates", undefined);
       this.setProperty("$$qx-widget-initialized", undefined);

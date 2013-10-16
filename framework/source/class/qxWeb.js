@@ -70,8 +70,8 @@ qx.Bootstrap.define("qxWeb", {
         }
       }
 
-      if (arg[0] && arg[0].getAttribute && arg[0].getAttribute("qx-class")) {
-        clazz = qx.Bootstrap.getByName(arg[0].getAttribute("qx-class")) || clazz;
+      if (arg[0] && arg[0].getAttribute && arg[0].getAttribute("data-qx-class")) {
+        clazz = qx.Bootstrap.getByName(arg[0].getAttribute("data-qx-class")) || clazz;
       }
 
       var col = qx.lang.Array.cast(clean, clazz);
