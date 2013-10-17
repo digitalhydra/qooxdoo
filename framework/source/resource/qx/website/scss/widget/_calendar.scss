@@ -38,6 +38,11 @@
   color: $background-color;
 }
 
+.qx-calendar .selected button:focus {
+  -webkit-text-stroke: 0;
+  color: $background-color;
+}
+
 .qx-calendar thead td {
   padding: 2px 6px;
   width: 14.3%;

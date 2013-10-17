@@ -105,7 +105,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      * @return {qxWeb} The collection for chaining
      */
     getValue : function() {
-      return this.getProperty("value");
+      var value = this.getProperty("value");
+      return value ? new Date(value) : null;
     },
 
 
@@ -122,6 +123,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
+        item.offWidget("focus", this._onFocus, item)
+        .offWidget("blur", this._onBlur, item);
       }, this);
 
       this.setHtml(this._getTable(value));
@@ -130,6 +133,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-prev").onWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").onWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").onWidget("click", this._selectDay, item);
+        item.onWidget("focus", this._onFocus, item)
+        .onWidget("blur", this._onBlur, item);
       }, this);
 
       return this;
@@ -160,8 +165,10 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      */
     _selectDay : function(e) {
       var day = qxWeb(e.getTarget());
-      var newValue = new Date(day.getAttribute("value"));
+      var newStr = day.getAttribute("value");
+      var newValue = new Date(newStr);
       this.setValue(newValue);
+      this.find(".qx-calendar-day[value='" + newStr + "']").focus();
     },
 
 
@@ -253,12 +260,132 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       return weeks.join("");
     },
 
+
+    /**
+     * Attaches the keydown listener
+     * @param e {Event} focus event
+     */
+    _onFocus : function(e) {
+      qxWeb(document.documentElement).onWidget("keydown", this._onKeyDown, this);
+    },
+
+
+    /**
+     * Removes the keydown listener if the focus moves outside of the calendar
+     * @param e {Event} blur event
+     */
+    _onBlur : function(e) {
+      //TODO: add qx.dom.Hierarchy.contains to Traversing module
+      if (!this[0].contains(e.getRelatedTarget())) {
+        qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
+      }
+    },
+
+
+    /**
+     * Keyboard handling
+     *
+     * @param e {Event} keydown event
+     */
+    _onKeyDown : function(e) {
+      var target = qxWeb(e.getTarget());
+      var key = e.getKeyIdentifier();
+      var isDayButton = target.hasClass("qx-calendar-day");
+
+      if (isDayButton) {
+        if (key == "Space") {
+          this._selectDay(e);
+        }
+        else if (key == "Right" || (key == "Tab" && !e.shiftKey)) {
+          e.preventDefault();
+          this._focusNextDay(target);
+        }
+        else if (key == "Left" || (key == "Tab" && e.shiftKey)) {
+          e.preventDefault();
+          this._focusPrevDay(target);
+        }
+      } else {
+        if (key == "Space") {
+          if (target.hasClass("qx-calendar-prev")) {
+            e.preventDefault();
+            this._prevMonth();
+            this.find(".qx-calendar-prev").focus();
+          } else if (target.hasClass("qx-calendar-next")) {
+            e.preventDefault();
+            this._nextMonth();
+            this.find(".qx-calendar-next").focus();
+          }
+        } else if (key == "Right") {
+          e.preventDefault();
+          this._nextMonth();
+        } else if (key == "Left") {
+          e.preventDefault();
+          this._prevMonth();
+        }
+      }
+
+      e.stopPropagation();
+    },
+
+
+    /**
+     * Focuses the day button following the given one
+     * @param currentDay {qxWeb} the button for the current day
+     */
+    _focusNextDay : function(currentDay) {
+      var nextDayInWeek = currentDay.getParents().getNext();
+      if (nextDayInWeek.length > 0) {
+        nextDayInWeek.getChildren(".qx-calendar-day").focus();
+      } else {
+        var nextWeekRow = currentDay.getParents().getParents().getNext();
+        if (nextWeekRow.length > 0) {
+          nextWeekRow.find("> td > .qx-calendar-day").getFirst().focus();
+        } else {
+          this._nextMonth();
+          var oldDate = new Date(currentDay.getAttribute("value"));
+          var newDate = new Date(oldDate.valueOf());
+          newDate.setDate(oldDate.getDate() + 1);
+          var buttonVal = newDate.toDateString();
+          this.find(".qx-calendar-day[value='" + buttonVal + "']").focus();
+        }
+      }
+    },
+
+
+    /**
+     * Focuses the day button preceding the given one
+     * @param currentDay {qxWeb} the button for the current day
+     */
+    _focusPrevDay : function(currentDay) {
+      var prevDayInWeek = currentDay.getParents().getPrev();
+      if (prevDayInWeek.length > 0) {
+        prevDayInWeek.getChildren(".qx-calendar-day").focus();
+      } else {
+        var prevWeekRow = currentDay.getParents().getParents().getPrev();
+        if (prevWeekRow.length > 0) {
+          prevWeekRow.find("> td > .qx-calendar-day").getLast().focus();
+        } else {
+          this._prevMonth();
+          var oldDate = new Date(currentDay.getAttribute("value"));
+          var newDate = new Date(oldDate.valueOf());
+          newDate.setDate(oldDate.getDate() - 1);
+          var buttonVal = newDate.toDateString();
+          this.find(".qx-calendar-day[value='" + buttonVal + "']").focus();
+        }
+      }
+    },
+
+
     dispose : function() {
       this._forEachElementWrapped(function(item) {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
+        item.offWidget("focus", this._onFocus, item)
+        .offWidget("blur", this._onBlur, item);
       }, this);
+
+      qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
 
       this.setHtml("");
 
@@ -274,7 +401,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         var calendar =  new qx.ui.website.Calendar(this);
         calendar.init();
 
-        if (date != undefined) {
+        if (date !== undefined) {
           calendar.setValue(date);
         }
 
