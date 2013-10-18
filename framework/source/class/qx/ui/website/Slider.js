@@ -66,8 +66,9 @@ qx.Bootstrap.define("qx.ui.website.Slider",
       this.addClass("qx-slider");
 
       this._forEachElementWrapped(function(slider) {
-        slider.onWidget("click", slider._onClick, slider);
-        qxWeb(document.documentElement).onWidget("mouseup", slider._onMouseUp, slider);
+        slider.onWidget("click", slider._onClick, slider)
+        .onWidget("focus", slider._onSliderFocus, slider);
+        qxWeb(document.documentElement).on("mouseup", slider._onMouseUp, slider);
         qxWeb(window).onWidget("resize", slider._onWindowResize, slider);
 
         if (slider.getChildren(".qx-slider-knob").length === 0) {
@@ -83,8 +84,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         .setHtml(slider._getKnobContent())
         .onWidget("mousedown", slider._onMouseDown, slider)
         .onWidget("dragstart", slider._onDragStart, slider)
-        .onWidget("focus", slider._onFocus, slider)
-        .onWidget("blur", slider._onBlur, slider);
+        .onWidget("focus", slider._onKnobFocus, slider)
+        .onWidget("blur", slider._onKnobBlur, slider);
         slider.render();
       });
 
@@ -300,7 +301,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
       this.__dragMode = true;
 
-      qxWeb(document.documentElement).onWidget("mousemove", this._onMouseMove, this)
+      qxWeb(document.documentElement).on("mousemove", this._onMouseMove, this)
       .setStyle("cursor", "pointer");
 
       e.stopPropagation();
@@ -320,7 +321,7 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
         this.__valueToPosition(this.getValue());
 
-        qxWeb(document.documentElement).offWidget("mousemove", this._onMouseMove, this)
+        qxWeb(document.documentElement).off("mousemove", this._onMouseMove, this)
         .setStyle("cursor", null);
       }
 
@@ -361,13 +362,18 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     },
 
 
-    _onFocus : function(e) {
-      qxWeb(document.documentElement).onWidget("keydown", this._onKeyDown, this);
+    _onSliderFocus : function(e) {
+      this.getChildren(".qx-slider-knob").focus();
     },
 
 
-    _onBlur : function(e) {
-      qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
+    _onKnobFocus : function(e) {
+      qxWeb(document.documentElement).on("keydown", this._onKeyDown, this);
+    },
+
+
+    _onKnobBlur : function(e) {
+      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
     },
 
 
@@ -403,6 +409,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         else {
           newValue = currentValue - 1;
         }
+      } else {
+        return;
       }
 
       this.setValue(newValue);
@@ -469,15 +477,16 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     dispose : function()
     {
       this._forEachElementWrapped(function(slider) {
-        slider.offWidget("click", slider._onClick, slider);
+        slider.offWidget("click", slider._onClick, slider)
+        .offWidget("focus", slider._onSliderFocus, slider);
         slider.getChildren(".qx-slider-knob")
         .offWidget("mousedown", slider._onMouseDown, slider)
         .offWidget("dragstart", slider._onDragStart, slider)
-        .offWidget("focus", slider._onFocus, slider)
-        .offWidget("blur", slider._onBlur, slider);
+        .offWidget("focus", slider._onKnobFocus, slider)
+        .offWidget("blur", slider._onKnobBlur, slider);
 
-        qxWeb(document.documentElement).offWidget("mouseup", slider._onMouseUp, slider)
-        .offWidget("keydown", slider._onKeyDown, slider);
+        qxWeb(document.documentElement).off("mouseup", slider._onMouseUp, slider)
+        .off("keydown", slider._onKeyDown, slider);
         qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
       });
 

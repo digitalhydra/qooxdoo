@@ -124,7 +124,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
         item.offWidget("focus", this._onFocus, item)
-        .offWidget("blur", this._onBlur, item);
+        .offWidget("blur", this._onBlur, item); //TODO: needs useCapture to work
       }, this);
 
       this.setHtml(this._getTable(value));
@@ -266,7 +266,10 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      * @param e {Event} focus event
      */
     _onFocus : function(e) {
-      qxWeb(document.documentElement).onWidget("keydown", this._onKeyDown, this);
+      if (qxWeb(document.documentElement).hasListener("keydown", this._onKeyDown, this)) {
+        return;
+      }
+      qxWeb(document.documentElement).on("keydown", this._onKeyDown, this);
     },
 
 
@@ -275,9 +278,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      * @param e {Event} blur event
      */
     _onBlur : function(e) {
-      //TODO: add qx.dom.Hierarchy.contains to Traversing module
-      if (!this[0].contains(e.getRelatedTarget())) {
-        qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
+      if (this.contains(e.getRelatedTarget()).length === 0) {
+        qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
       }
     },
 
@@ -296,11 +298,11 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         if (key == "Space") {
           this._selectDay(e);
         }
-        else if (key == "Right" || (key == "Tab" && !e.shiftKey)) {
+        else if (key == "Right") {
           e.preventDefault();
           this._focusNextDay(target);
         }
-        else if (key == "Left" || (key == "Tab" && e.shiftKey)) {
+        else if (key == "Left") {
           e.preventDefault();
           this._focusPrevDay(target);
         }
@@ -318,9 +320,11 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         } else if (key == "Right") {
           e.preventDefault();
           this._nextMonth();
+          this.find(".qx-calendar-next").focus();
         } else if (key == "Left") {
           e.preventDefault();
           this._prevMonth();
+          this.find(".qx-calendar-prev").focus();
         }
       }
 
@@ -382,10 +386,10 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
         item.offWidget("focus", this._onFocus, item)
-        .offWidget("blur", this._onBlur, item);
+        .offWidget("blur", this._onBlur, item, true);
       }, this);
 
-      qxWeb(document.documentElement).offWidget("keydown", this._onKeyDown, this);
+      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
 
       this.setHtml("");
 
