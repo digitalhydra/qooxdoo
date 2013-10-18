@@ -51,9 +51,11 @@ qx.Bootstrap.define("qx.module.Event", {
      * @param listener {Function} Listener callback
      * @param context {Object?} Context the callback function will be executed in.
      * Default: The element on which the listener was registered
+     * @param useCapture {Boolean?} Attach the listener to the capturing
+     * phase if true
      * @return {qxWeb} The collection for chaining
      */
-    on : function(type, listener, context) {
+    on : function(type, listener, context, useCapture) {
       for (var i=0; i < this.length; i++) {
         var el = this[i];
         var ctx = context || qxWeb(el);
@@ -90,7 +92,7 @@ qx.Bootstrap.define("qx.module.Event", {
 
         // add native listener
         if (qx.bom.Event.supportsEvent(el, type)) {
-          qx.bom.Event.addNativeListener(el, type, bound);
+          qx.bom.Event.addNativeListener(el, type, bound, useCapture);
         }
         // create an emitter if necessary
         if (!el.__emitter) {
@@ -127,9 +129,11 @@ qx.Bootstrap.define("qx.module.Event", {
      * @param type {String} Type of the event
      * @param listener {Function} Listener callback
      * @param context {Object?} Listener callback context
+     * @param useCapture {Boolean?} Attach the listener to the capturing
+     * phase if true
      * @return {qxWeb} The collection for chaining
      */
-    off : function(type, listener, context) {
+    off : function(type, listener, context, useCapture) {
       var removeAll = (listener === null && context === null);
 
       for (var j=0; j < this.length; j++) {
@@ -166,7 +170,7 @@ qx.Bootstrap.define("qx.module.Event", {
               // check if it's a bound listener which means it was a native event
               if (removeAll || storedListener.original == listener) {
                 // remove the native listener
-                qx.bom.Event.removeNativeListener(el, types[i], storedListener);
+                qx.bom.Event.removeNativeListener(el, types[i], storedListener, useCapture);
               }
 
               delete el.__listener[types[i]][id];

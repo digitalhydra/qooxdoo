@@ -46,9 +46,11 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * @param listener {Function} Listener callback
      * @param context {Object?} Context the callback function will be executed in.
      * Default: The element on which the listener was registered
+     * @param useCapture {Boolean?} Attach the listener to the capturing
+     * phase if true.
      * @return {qxWeb} The collection for chaining
      */
-    onWidget : function(type, listener, ctx) {
+    onWidget : function(type, listener, ctx, useCapture) {
       var propertyName = this.classname.replace(/\./g, "-") + "-context";
       if (!this.getProperty(propertyName)) {
         this.setProperty(propertyName, ctx);
@@ -56,7 +58,7 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       var originalCtx = this.getProperty(propertyName);
 
       if (!this.hasListener(type, listener, originalCtx)) {
-        this.on(type, listener, originalCtx);
+        this.on(type, listener, originalCtx, useCapture);
       }
 
       return this;
@@ -66,12 +68,19 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      * TODOC
      *
      * @attach {qxWeb}
+     * @param type {String} Type of the event to listen for
+     * @param listener {Function} Listener callback
+     * @param context {Object?} Context the callback function will be executed in.
+     * Default: The element on which the listener was registered
+     * @param useCapture {Boolean?} Attach the listener to the capturing
+     * phase if true.
+     * @return {qxWeb} The collection for chaining
      */
-    offWidget : function(type, listener, ctx) {
+    offWidget : function(type, listener, ctx, useCapture) {
       var propertyName = this.classname.replace(/\./g, "-") + "-context";
       var originalCtx = this.getProperty(propertyName);
 
-      this.off(type, listener, originalCtx);
+      this.off(type, listener, originalCtx, useCapture);
 
       return this;
     },

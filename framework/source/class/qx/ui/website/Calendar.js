@@ -123,8 +123,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
-        item.offWidget("focus", this._onFocus, item)
-        .offWidget("blur", this._onBlur, item); //TODO: needs useCapture to work
+        item.offWidget("focus", this._onFocus, item, true)
+        .offWidget("blur", this._onBlur, item, true);
       }, this);
 
       this.setHtml(this._getTable(value));
@@ -133,8 +133,8 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-prev").onWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").onWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").onWidget("click", this._selectDay, item);
-        item.onWidget("focus", this._onFocus, item)
-        .onWidget("blur", this._onBlur, item);
+        item.onWidget("focus", this._onFocus, item, true)
+        .onWidget("blur", this._onBlur, item, true);
       }, this);
 
       return this;
@@ -266,10 +266,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      * @param e {Event} focus event
      */
     _onFocus : function(e) {
-      if (qxWeb(document.documentElement).hasListener("keydown", this._onKeyDown, this)) {
-        return;
-      }
-      qxWeb(document.documentElement).on("keydown", this._onKeyDown, this);
+      this.onWidget("keydown", this._onKeyDown, this);
     },
 
 
@@ -279,7 +276,7 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
      */
     _onBlur : function(e) {
       if (this.contains(e.getRelatedTarget()).length === 0) {
-        qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
+        this.offWidget("keydown", this._onKeyDown, this);
       }
     },
 
@@ -385,11 +382,10 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);
-        item.offWidget("focus", this._onFocus, item)
-        .offWidget("blur", this._onBlur, item, true);
+        item.offWidget("focus", this._onFocus, item, true)
+        .offWidget("blur", this._onBlur, item, true)
+        .offWidget("keydown", this._onKeyDown, item);
       }, this);
-
-      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
 
       this.setHtml("");
 
