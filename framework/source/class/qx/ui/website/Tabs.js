@@ -77,6 +77,8 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           buttons.eq(0).addClass("qx-tab-button-active");
         }
         tabs._showPage(buttons.filter(".qx-tab-button-active"));
+
+        tabs.onWidget("keydown", this._onKeyDown, this);
       }.bind(this));
 
       return true;
@@ -193,6 +195,43 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     },
 
 
+    /**
+     * Allows tab selection using the left and right arrow keys
+     * @param e {Event} keydown event
+     */
+    _onKeyDown : function(e) {
+      var key = e.getKeyIdentifier();
+      if (!(key == "Left" || key == "Right")) {
+        return;
+      }
+      var rightAligned = this.getConfig("align") == "right";
+      var buttons = this.find("> ul > .qx-tab-button");
+      if (rightAligned) {
+        buttons.reverse();
+      }
+      var active = this.find("> ul > .qx-tab-button-active");
+      var next;
+      if (key == "Right") {
+        if (!rightAligned) {
+          next = active.getNext(".qx-tab-button");
+        } else {
+          next = active.getPrev(".qx-tab-button");
+        }
+      } else {
+        if (!rightAligned) {
+          next = active.getPrev(".qx-tab-button");
+        } else {
+          next = active.getNext(".qx-tab-button");
+        }
+      }
+
+      if (next.length > 0) {
+        var idx = buttons.indexOf(next);
+        this.select(idx);
+      }
+    },
+
+
     _showPage : function(newButton, oldButton) {
       if (this.hasListener("changePage")) {
         this.emit("changePage", {
@@ -225,6 +264,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     dispose : function() {
       this._forEachElementWrapped(function(tabs) {
         tabs.find(".qx-tab-button").offWidget("click", this.__onClick, tabs);
+        tabs.offWidget("keydown", tabs._onKeyDown, tabs);
       });
 
       this.setHtml("").removeClass("qx-tabs");
