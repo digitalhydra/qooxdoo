@@ -368,12 +368,12 @@ qx.Bootstrap.define("qx.ui.website.Slider",
 
 
     _onKnobFocus : function(e) {
-      qxWeb(document.documentElement).on("keydown", this._onKeyDown, this);
+      this.getChildren(".qx-slider-knob").onWidget("keydown", this._onKeyDown, this);
     },
 
 
     _onKnobBlur : function(e) {
-      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
+      this.getChildren(".qx-slider-knob").offWidget("keydown", this._onKeyDown, this);
     },
 
 
@@ -483,10 +483,10 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         .offWidget("mousedown", slider._onMouseDown, slider)
         .offWidget("dragstart", slider._onDragStart, slider)
         .offWidget("focus", slider._onKnobFocus, slider)
-        .offWidget("blur", slider._onKnobBlur, slider);
+        .offWidget("blur", slider._onKnobBlur, slider)
+        .offWidget("keydown", slider._onKeyDown, slider);
 
-        qxWeb(document.documentElement).off("mouseup", slider._onMouseUp, slider)
-        .off("keydown", slider._onKeyDown, slider);
+        qxWeb(document.documentElement).off("mouseup", slider._onMouseUp, slider);
         qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
       });
 
