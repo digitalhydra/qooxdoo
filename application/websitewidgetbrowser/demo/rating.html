@@ -1,14 +1,3 @@
-<!-- TODO: events -->
-<style type="text/css">
-.qx-rating-heart > span {
-  font-size: 30px;
-  background: -webkit-linear-gradient(280deg, #F264A7, #C35287);
-  color: #F264A7;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1px #C35287;
-}
-</style>
 <div id="demo-rating" class="demo-container">
   <div class="demo-cell">
     <h2>Default</h2>
@@ -24,6 +13,16 @@
   </div>
   <div class="demo-cell">
     <h2>Custom Styling</h2>
+    <style type="text/css">
+    .qx-rating-heart > span {
+      font-size: 30px;
+      background: -webkit-linear-gradient(280deg, #F264A7, #C35287);
+      color: #F264A7;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1px #C35287;
+    }
+    </style>
     <div data-qx-class="qx.ui.website.Rating" class="qx-rating-heart" data-qx-config-symbol="❤"></div>
   </div>
 </div>

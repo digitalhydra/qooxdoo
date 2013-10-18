@@ -16,6 +16,7 @@
     "build-min",
     "build-module-all",
     "build-module-all-min",
+    "source",
     "test",
     "test-source",
     "validate-config"

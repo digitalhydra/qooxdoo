@@ -60,6 +60,29 @@ q.ready(function() {
   };
 
 
+  window.widgetbrowser = {};
+  widgetbrowser.showCode = function(selector) {
+    if ((q.env.get("engine.name") == "mshtml" && q.env.get("browser.documentmode") < 9)) {
+      return;
+    }
+    q(selector + " .demo-cell")._forEachElementWrapped(function(demo) {
+      var demoHtml = demo.getHtml();
+      demoHtml = demoHtml.replace(/<h2.*?<\/h2>/g, "");
+
+      demoHtml = demoHtml.split("\n").filter(function(item) {
+        return !!item.match(/\S/);
+      }).join("\n");
+
+      q.create("<h2>Demo Code</h2>").appendTo(demo);
+      pre = q.create("<pre class='demo-cell html'></pre>");
+      q.create("<code>").appendTo(pre)[0].appendChild(document.createTextNode(demoHtml));
+
+      pre.appendTo(demo);
+      hljs.highlightBlock(pre[0]);
+    });
+  };
+
+
   qxWeb.initWidgets();
 
   q("#content")
