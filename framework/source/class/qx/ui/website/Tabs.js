@@ -78,7 +78,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
         }
         tabs._showPage(buttons.filter(".qx-tab-button-active"));
 
-        tabs.onWidget("keydown", this._onKeyDown, this);
+        tabs.getChildren("ul").getFirst().onWidget("keydown", this._onKeyDown, this);
       }.bind(this));
 
       return true;
@@ -264,7 +264,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
     dispose : function() {
       this._forEachElementWrapped(function(tabs) {
         tabs.find(".qx-tab-button").offWidget("click", this.__onClick, tabs);
-        tabs.offWidget("keydown", tabs._onKeyDown, tabs);
+        tabs.getChildren("ul").getFirst().offWidget("keydown", tabs._onKeyDown, tabs);
       });
 
       this.setHtml("").removeClass("qx-tabs");
