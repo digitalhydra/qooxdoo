@@ -52,9 +52,11 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
       this._forEachElementWrapped(function(rating) {
         rating.addClass("qx-rating")
+        .onWidget("focus", this._onFocus, rating)
+        .onWidget("blur", this._onBlur, rating)
         .getChildren("span")
           .addClasses(["qx-rating-item", "qx-rating-item-off"])
-          .onWidget("click", this.__onClick, rating);
+          .onWidget("click", this._onClick, rating);
       }.bind(this));
 
       return true;
@@ -91,14 +93,14 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
         if (diff > 0) {
           for (var i = 0; i < diff; i++) {
             qxWeb.create("<span>" + this.getConfig("symbol") + "</span>")
-            .onWidget("click", el.__onClick, el)
+            .onWidget("click", el._onClick, el)
             .addClass("qx-rating-item")
             .appendTo(el);
           }
         } else {
           for (var i = 0; i < Math.abs(diff); i++) {
             el.getChildren().getLast()
-            .offWidget("click", el.__onClick, el)
+            .offWidget("click", el._onClick, el)
             .remove();
           }
         }
@@ -107,16 +109,52 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
     },
 
 
-    __onClick : function(e) {
+    _onClick : function(e) {
       var parents = qxWeb(e.getTarget()).getParents();
       this.setValue(parents.getChildren().indexOf(e.getTarget()) + 1);
     },
 
+
+    /**
+     * Attaches the keydown listener
+     * @param e {Event} focus event
+     */
+    _onFocus : function(e) {
+      qxWeb(document.documentElement).on("keydown", this._onKeyDown, this);
+    },
+
+
+    /**
+     * Removes the keydown listener if the widget loses focus
+     */
+    _onBlur : function(e) {
+      if (this.contains(e.getRelatedTarget()).length === 0) {
+        qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
+      }
+    },
+
+
+    /**
+     * Changes the value if the left or right arrow key is pressed
+     * @param e {Event} keydown event
+     */
+    _onKeyDown : function(e) {
+      var key = e.getKeyIdentifier();
+      if (key === "Right") {
+        this.setValue(this.getValue() + 1);
+      } else if (key === "Left") {
+        this.setValue(this.getValue() - 1);
+      }
+    },
+
+
     dispose : function() {
       this._forEachElementWrapped(function(rating) {
-        rating.getChildren("span").offWidget("click", rating.__onClick, rating);
+        rating.getChildren("span").offWidget("click", rating._onClick, rating);
       });
       this.setHtml("");
+
+      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
 
       return this.base(arguments);
     }
