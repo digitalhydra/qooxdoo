@@ -120,6 +120,9 @@ qx.Bootstrap.define("qx.ui.website.Calendar", {
       this.setProperty("shownValue", value);
 
       this._forEachElementWrapped(function(item) {
+        if (item.getAttribute("tabindex") < 0) {
+          item.setAttribute("tabindex", 0);
+        }
         item.find(".qx-calendar-prev").offWidget("click", this._prevMonth, item);
         item.find(".qx-calendar-next").offWidget("click", this._nextMonth, item);
         item.find(".qx-calendar-day").offWidget("click", this._selectDay, item);

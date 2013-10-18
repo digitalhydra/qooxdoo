@@ -51,6 +51,9 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
       this._updateSymbolLength();
 
       this._forEachElementWrapped(function(rating) {
+        if (rating.getAttribute("tabindex") < 0) {
+          rating.setAttribute("tabindex", 0);
+        }
         rating.addClass("qx-rating")
         .onWidget("focus", this._onFocus, rating)
         .onWidget("blur", this._onBlur, rating)
