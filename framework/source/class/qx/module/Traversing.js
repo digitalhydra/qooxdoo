@@ -24,6 +24,7 @@
  * @require(qx.dom.Hierarchy#getSiblings)
  * @require(qx.dom.Hierarchy#getNextSiblings)
  * @require(qx.dom.Hierarchy#getPreviousSiblings)
+ * @require(qx.dom.Hierarchy#contains)
  */
 qx.Bootstrap.define("qx.module.Traversing", {
   statics :
@@ -316,6 +317,34 @@ qx.Bootstrap.define("qx.module.Traversing", {
       });
 
       return qxWeb.$init(found, this.constructor);
+    },
+
+
+    /**
+     * Returns a new collection containing only those nodes that
+     * contain the given element. Also accepts a qxWeb
+     * collection or an Array of elements. In those cases, the first element
+     * in the list is used.
+     *
+     * @attach {qxWeb}
+     * @param element {Element|Window|Element[]|qxWeb} element to check for.
+     * @return {qxWeb} Collection with matching items
+     */
+    contains : function(element) {
+      if (element instanceof Array) {
+        element = element[0];
+      }
+
+      if (!element) {
+        return qxWeb();
+      }
+
+      return this.filter(function(el) {
+        if (qx.dom.Node.isWindow(el)) {
+          el = el.document;
+        }
+        return qx.dom.Hierarchy.contains(el, element);
+      });
     },
 
 
@@ -698,7 +727,8 @@ qx.Bootstrap.define("qx.module.Traversing", {
       "getSiblings" : statics.getSiblings,
       "not" : statics.not,
       "getOffsetParent" : statics.getOffsetParent,
-      "isRendered" : statics.isRendered
+      "isRendered" : statics.isRendered,
+      "contains" : statics.contains
     });
 
     qxWeb.$attachStatic({

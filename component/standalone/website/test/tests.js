@@ -1117,6 +1117,22 @@ testrunner.define({
   {
     this.assertTrue(q.isTextNode(document.createTextNode("bla")));
     this.assertFalse(q.isTextNode(document.createElement("p")));
+  },
+
+  testContains : function() {
+    this.sandbox.append("<h2 class='foo'>Foo</h2>");
+
+    this.assertEquals(1, qxWeb(document.documentElement).contains(document.body).length);
+    this.assertEquals(1, this.sandbox.contains(q("#sandbox .foo")[0]).length);
+    this.assertEquals(0, this.sandbox.contains(window).length);
+
+    this.assertEquals(1, this.sandbox.contains(q("#sandbox .foo")).length);
+    this.assertEquals(0, this.sandbox.contains(q("#sandbox .nope")).length);
+
+    this.sandbox.push(window);
+    this.sandbox.push(q.create("<div>")[0]);
+    this.assertEquals(2, this.sandbox.contains(q("#sandbox .foo")).length);
+    this.assertEquals(0, this.sandbox.contains(q("#sandbox .nope")).length);
   }
 });
 
