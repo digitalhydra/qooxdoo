@@ -1,4 +1,11 @@
 q.ready(function() {
+  var demos = {
+    button : ["Default"],
+    calendar : ["Default", "Customized"],
+    rating : ["Default", "Custom Length", "Custom Symbol", "Custom Styling"],
+    slider : ["Default", "Customized"],
+    tabs : ["Default"]
+  };
 
   /**
    * Disable/enable all widgets on each tab
@@ -27,18 +34,44 @@ q.ready(function() {
     }
   };
 
+  var loadDemos = function(category) {
+    demos[category] && demos[category].forEach(function(title) {
+      loadDemo(category, title);
+    });
+  };
 
-  var loadDemo = function(demo) {
-    q.io.xhr("demo/" + demo + ".html").on("load", function(xhr) {
+
+  var loadDemo = function(category, title) {
+    var url = "demo/" + category + "/" + title + ".html";
+    q.io.xhr(url).on("load", function(xhr) {
       if (xhr.status == 200) {
         var pageSelector = q("#content").find("> ul > .qx-tab-button-active").getData("qxTabPage");
-        q(pageSelector).setHtml(xhr.responseText);
-        q.io.script("demo/" + demo + ".js").send();
+        var demoCell = createDemoCell(title, xhr.responseText);
+        q(pageSelector).getChildren(".demo-container").append(demoCell);
+
+        var scripts = q.$$qx.bom.Html.extractScripts([demoCell[0]]);
+        scripts.forEach(function(script) {
+          eval(script.innerHTML);
+        });
       }
       else {
         console.error("Could not load demo: ", xhr.status, xhr.statusText);
       }
     }).send();
+  };
+
+
+  var createDemoCell = function(demoTitle, demoCode) {
+    var demoCell = q.create("<div class='demo-cell'>").setHtml(demoCode);
+    q.create("<h2>" + demoTitle + "</h2>").insertBefore(demoCell.getChildren().getFirst());
+
+    q.create("<p class='code-header'>Demo Code</p>").appendTo(demoCell);
+    pre = q.create("<pre class='demo-cell html'></pre>");
+    q.create("<code>").appendTo(pre)[0].appendChild(document.createTextNode(demoCode));
+    pre.appendTo(demoCell);
+    hljs.highlightBlock(pre[0]);
+
+    return demoCell;
   };
 
 
@@ -52,11 +85,21 @@ q.ready(function() {
     location.hash = buttonText;
 
     var demoPageSelector = button.getData("qxTabPage");
-    if (q(demoPageSelector).getChildren(".demo-container").length > 0) {
+    if (q(demoPageSelector).getChildren(".demo-container").getChildren().length > 0) {
       return;
     }
     var demoName = demoPageSelector.match(/#(.*?)-/)[1];
-    loadDemo(demoName);
+    loadDemos(demoName);
+  };
+
+  var parseDemoCode = function(code) {
+    code = code.replace(/<h2.*?<\/h2>/g, "");
+
+    code = code.split("\n").filter(function(item) {
+      return !!item.match(/\S/);
+    }).join("\n");
+
+    return code;
   };
 
 
@@ -66,12 +109,7 @@ q.ready(function() {
       return;
     }
     q(selector + " .demo-cell")._forEachElementWrapped(function(demo) {
-      var demoHtml = demo.getHtml();
-      demoHtml = demoHtml.replace(/<h2.*?<\/h2>/g, "");
-
-      demoHtml = demoHtml.split("\n").filter(function(item) {
-        return !!item.match(/\S/);
-      }).join("\n");
+      var demoHtml = demo.getProperty("demoCode");
 
       q.create("<h2>Demo Code</h2>").appendTo(demo);
       pre = q.create("<pre class='demo-cell html'></pre>");
@@ -81,7 +119,6 @@ q.ready(function() {
       hljs.highlightBlock(pre[0]);
     });
   };
-
 
   qxWeb.initWidgets();
 
