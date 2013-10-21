@@ -3418,6 +3418,117 @@ testrunner.define({
     this.assertUndefined(w.getConfig("test"));
     this.assertUndefined(w.getTemplate("test"));
     this.assertUndefined(w.getTemplate("uiuibgkabfg"));
+  },
+
+  testOnOffWidget : function() {
+    var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    var called = 0;
+    var clb = function() {
+      called++;
+    };
+    w.onWidget("foo", clb, w);
+
+    w.emit("foo");
+    this.assertEquals(1, called);
+
+    w.onWidget("foo", clb, w);
+
+    w.emit("foo");
+    this.assertEquals(2, called);
+
+    w.offWidget("foo", clb, w);
+    w.emit("foo");
+    this.assertEquals(2, called);
+  },
+
+  testOnOffWidgetDifferentCallback : function() {
+    var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    var called = 0;
+    var clb = function() {
+      called++;
+    };
+    w.onWidget("foo", clb, w);
+
+    w.emit("foo");
+    this.assertEquals(1, called);
+
+    w.onWidget("foo", function() {
+      clb();
+    }, w);
+
+    w.emit("foo");
+    this.assertEquals(3, called);
+
+    w.offWidget("foo", clb, w);
+    w.emit("foo");
+    this.assertEquals(4, called);
+  },
+
+  testOnOffWidgetDifferentContext : function() {
+    var w = new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    var called = 0;
+    var clb = function() {
+      called++;
+    };
+    w.onWidget("foo", clb, {});
+
+    w.emit("foo");
+    this.assertEquals(1, called);
+
+    w.onWidget("foo", clb, {});
+
+    w.emit("foo");
+    this.assertEquals(2, called);
+
+    w.offWidget("foo", clb, {});
+    w.emit("foo");
+    this.assertEquals(2, called);
+  },
+
+  testOnOffWidgetMultipleItems : function() {
+    q.create("<div></div><div></div>").appendTo(this.sandbox);
+    this.sandbox.getChildren().setData("qxClass", "qx.ui.website.Widget");
+    var w = this.sandbox.getChildren();
+    var called = 0;
+    var clb = function() {
+      called++;
+    };
+    w.onWidget("foo", clb, w);
+
+    w.emit("foo");
+    this.assertEquals(2, called);
+
+    w.onWidget("foo", clb, w);
+
+    w.emit("foo");
+    this.assertEquals(4, called);
+
+    w.getFirst().emit("foo");
+    this.assertEquals(5, called);
+
+    w.offWidget("foo", clb, w);
+    w.getFirst().emit("foo");
+    this.assertEquals(5, called);
+  },
+
+  testOnOffWidgetMultipleCollections : function() {
+    new qxWeb.$$qx.ui.website.Widget(qxWeb("#sandbox"));
+    var called = 0;
+    var clb = function() {
+      called++;
+    };
+    q("#sandbox").onWidget("foo", clb, q("#sandbox"));
+
+    q("#sandbox").emit("foo");
+    this.assertEquals(1, called);
+
+    q("#sandbox").onWidget("foo", clb, q("#sandbox"));
+
+    q("#sandbox").emit("foo");
+    this.assertEquals(2, called);
+
+    q("#sandbox").offWidget("foo", clb, q("#sandbox"));
+    this.assertEquals(2, called);
   }
 });
 
