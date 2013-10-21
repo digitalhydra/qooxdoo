@@ -229,6 +229,7 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
       if (next.length > 0) {
         var idx = buttons.indexOf(next);
         this.select(idx);
+        next.getChildren("button").focus();
       }
     },
 
