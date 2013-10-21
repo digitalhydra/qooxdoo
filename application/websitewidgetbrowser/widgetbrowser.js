@@ -7,7 +7,7 @@ q.ready(function() {
     var enabled = !this.getAttribute("checked");
     q("#content > ul > .qx-tab-button")._forEachElementWrapped(function(button) {
       var selector = button.getData("qx-tab-page");
-      var widgets = q(selector).getChildren("*[data-qx-class]");
+      var widgets = q(selector).find("*[data-qx-class]");
       if (widgets.length > 0) {
         widgets.setEnabled(enabled);
       }
