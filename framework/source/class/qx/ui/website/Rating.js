@@ -67,6 +67,9 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
 
     setValue : function(value) {
+      if (value < 0) {
+        value = 0;
+      }
       this._forEachElementWrapped(function(rating) {
         var children = rating.getChildren("span");
         children.removeClass("qx-rating-item-off");
