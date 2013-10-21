@@ -477,6 +477,8 @@ qx.Bootstrap.define("qx.ui.website.Slider",
     dispose : function()
     {
       this._forEachElementWrapped(function(slider) {
+        qxWeb(document.documentElement).off("mouseup", slider._onMouseUp, slider);
+        qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
         slider.offWidget("click", slider._onClick, slider)
         .offWidget("focus", slider._onSliderFocus, slider);
         slider.getChildren(".qx-slider-knob")
@@ -485,9 +487,6 @@ qx.Bootstrap.define("qx.ui.website.Slider",
         .offWidget("focus", slider._onKnobFocus, slider)
         .offWidget("blur", slider._onKnobBlur, slider)
         .offWidget("keydown", slider._onKeyDown, slider);
-
-        qxWeb(document.documentElement).off("mouseup", slider._onMouseUp, slider);
-        qxWeb(window).offWidget("resize", slider._onWindowResize, slider);
       });
 
       this.removeClass("qx-slider");

@@ -153,11 +153,12 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
 
     dispose : function() {
       this._forEachElementWrapped(function(rating) {
+        qxWeb(document.documentElement).off("keydown", this._onKeyDown, rating);
+        rating.offWidget("focus", this._onFocus, rating)
+        .offWidget("blur", this._onBlur, rating);
         rating.getChildren("span").offWidget("click", rating._onClick, rating);
       });
       this.setHtml("");
-
-      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
 
       return this.base(arguments);
     }

@@ -96,8 +96,9 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           if (li.hasClass("qx-tab-button-active")) {
             selected = content.length - 1;
           }
-          li.remove();
         });
+
+        tabs.find("> ul").setHtml("");
 
         var toRight = this.getConfig("align") == "right" && !tabs.find("> ul").hasClass("qx-tabs-right");
         var fromRight = this.getConfig("align") != "right" && tabs.find("> ul").hasClass("qx-tabs-right");
@@ -263,8 +264,9 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
 
     dispose : function() {
       this._forEachElementWrapped(function(tabs) {
-        tabs.find(".qx-tab-button").offWidget("click", this.__onClick, tabs);
-        tabs.getChildren("ul").getFirst().offWidget("keydown", tabs._onKeyDown, tabs);
+        tabs.find(".qx-tab-button").offWidget("click", tabs.__onClick, tabs);
+        tabs.getChildren("ul").getFirst().offWidget("keydown", tabs._onKeyDown, tabs)
+        .setHtml("");
       });
 
       this.setHtml("").removeClass("qx-tabs");

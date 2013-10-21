@@ -78,9 +78,10 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
      */
     offWidget : function(type, listener, ctx, useCapture) {
       var propertyName = this.classname.replace(/\./g, "-") + "-context";
-      var originalCtx = this.getProperty(propertyName);
-
-      this.off(type, listener, originalCtx, useCapture);
+      this._forEachElementWrapped(function(item) {
+        var originalCtx = item.getProperty(propertyName);
+        item.off(type, listener, originalCtx, useCapture);
+      });
 
       return this;
     },
@@ -212,6 +213,8 @@ qx.Bootstrap.define("qx.ui.website.Widget", {
       this.removeAttribute("data-qx-class");
       this.setProperty("config", undefined);
       this.setProperty("templates", undefined);
+      var contextProperty = this.classname.replace(/\./g, "-") + "-context";
+      this.setProperty(contextProperty, undefined);
       this.setProperty("$$qx-widget-initialized", undefined);
       this.removeClass("qx-widget");
 
