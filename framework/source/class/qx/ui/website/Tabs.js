@@ -159,8 +159,16 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
             item.getTemplate("button"),
             {content: button}
           )
-        ).appendTo(item.find("> ul"))
-        .onWidget("click", this.__onClick, item)
+        ).addClass("qx-tab-button");
+        var list = item.find("> ul");
+        var links = list.getChildren("li");
+        if (this.getConfig("align") == "right" && links.length > 0) {
+          link.insertBefore(links.getFirst());
+        } else {
+          link.appendTo(list);
+        }
+
+        link.onWidget("click", this.__onClick, item)
         .addClass("qx-tab-button");
         if (item.find("> ul .qx-tab-button").length === 1) {
           link.addClass("qx-tab-button-active");
