@@ -61,6 +61,15 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           tabs.append(qxWeb.create("<ul/>"));
         }
 
+        tabs.find("> ul").removeClasses(["qx-tabs-justify", "qx-tabs-right"]);
+
+        var align = tabs.getConfig("align");
+        if (align == "justify") {
+          tabs.find("> ul").addClass("qx-tabs-justify");
+        } else if (align == "right") {
+          tabs.find("> ul").addClass("qx-tabs-right");
+        }
+
         var buttons = tabs.getChildren("ul").getFirst().getChildren("li");
         buttons.addClass("qx-tab-button")._forEachElementWrapped(function(button) {
           tabs._getPage(button).hide();
@@ -72,8 +81,15 @@ qx.Bootstrap.define("qx.ui.website.Tabs", {
           }
         }.bind(this));
 
+        if (align == "right") {
+          buttons.remove();
+          for (var i=buttons.length - 1; i>=0; i--) {
+            tabs.find("> ul").append(buttons[i]);
+          }
+        }
+
         var active = buttons.filter(".qx-tab-button-active");
-        if (active.length == 0) {
+        if (active.length === 0) {
           buttons.eq(0).addClass("qx-tab-button-active");
         }
         tabs._showPage(buttons.filter(".qx-tab-button-active"));
