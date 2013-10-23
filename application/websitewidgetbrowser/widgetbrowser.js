@@ -131,6 +131,12 @@ q.ready(function() {
 
   q(".disable input").on("change", onDisable);
 
+  q("#sizeSlider")
+  .setTemplate("knobContent", "{{value}}%").render()
+  .on("changeValue", function(value) {
+    q("html").setStyle("font-size", value + "%");
+  });
+
 
   // select tab by URL hash or select the tabs widget's default
   setTimeout(function() {

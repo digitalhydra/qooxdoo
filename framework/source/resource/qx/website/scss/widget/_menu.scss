@@ -4,13 +4,13 @@
   z-index: 1000001;
   position: absolute;
   background-color: $background-color;
-  border: 1px solid $border-color;
-  padding: 0px;
-  margin: 0px;
+  border: rem(1) solid $border-color;
+  padding: rem(0);
+  margin: rem(0);
 }
 
 .qx-menu li {
-  padding: 6px 10px;
+  padding: rem(6) rem(10);
   list-style-type: none;
   cursor: pointer;
 }

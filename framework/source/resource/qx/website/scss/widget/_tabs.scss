@@ -11,15 +11,15 @@
 }
 
 .qx-tab-button:first-child {
-  margin-left: 0px;
+  margin-left: rem(0);
 }
 
 .qx-tab-button {
   float: left;
-  margin-bottom: -1px;
+  margin-bottom: rem(-1);
   cursor: pointer;
-  border: 1px solid transparent;
-  margin-left: 3px;
+  border: rem(1) solid transparent;
+  margin-left: rem(3);
 }
 
 .qx-tab-button > button {
@@ -27,7 +27,8 @@
   border: 0;
   color: $highlight-color;
   outline: none;
-  padding: 8px 12px;
+  padding: rem(8) rem(12);
+  font-size: rem(13);
 }
 
 .qx-tab-button > button[disabled] {
@@ -39,30 +40,31 @@
 }
 
 .qx-tab-button-active {
-  border: 1px solid $border-color;
-  border-bottom: 1px solid $background-color;
-  @include border-radius(2px 2px 0 0);
+  border: rem(1) solid $border-color;
+  border-bottom: rem(1) solid $background-color;
+  @include border-radius(rem(2) rem(2) 0 0);
+  @include background($background-color);
 }
 
 .qx-tab-button:hover {
-  border-bottom: 1px solid $border-color;
-  @include border-radius(2px 2px 0 0);
+  border-bottom: rem(1) solid $border-color;
+  @include border-radius(rem(2) rem(2) 0 0);
   background-color: darken($background-color, 10%);
 }
 
 .qx-tab-button-active:hover {
-  border: 1px solid $border-color;
-  border-bottom: 1px solid $background-color;
-  background-color: transparent;
+  border: rem(1) solid $border-color;
+  border-bottom: rem(1) solid $background-color;
+  @include background($background-color);
 }
 
-.qx-tab-button-active > button{
+.qx-tab-button-active > button {
   color: black;
 }
 
 .qx-tab-page {
-  border: 1px solid $border-color;
-  padding: 10px;
+  border: rem(1) solid $border-color;
+  padding: rem(10);
   @include user-select(text);
 }
 
@@ -78,10 +80,10 @@
   float: none;
   border-bottom-color: transparent;
   position: relative;
-  top: 1px;
+  top: rem(1);
 }
 .qx-tabs-justify > .qx-tab-button-active {
-  border-bottom: 1px solid $background-color;
+  border-bottom: rem(1) solid $background-color;
 }
 
 .qx-tabs-right > li {

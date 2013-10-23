@@ -1,21 +1,5 @@
 @import "../../../scss/mixins";
 
-@function rem($value, $factor: 1.0) {
-  @if ($value != 0 and $value != auto) {
-    @if (unitless($value)) {
-      $value: $value * 1px;
-    }
-
-    @if (unit($factor) == "%") {
-      $factor: $factor / ($factor * 0 + 1) / 100;
-    }
-
-    $value: $factor*($value/16px) * 1rem;
-  }
-
-  @return $value;
-}
-
 @mixin tap-highlight-color($args) {
   -webkit-tap-highlight-color: $args;
   -moz-tap-highlight-color: $args;

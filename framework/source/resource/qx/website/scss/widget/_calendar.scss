@@ -1,5 +1,5 @@
 .qx-calendar table {
-  border-width: 1px;
+  border-width: rem(1);
   border-color: $border-color;
   border-collapse: collapse;
   text-align: center;
@@ -11,12 +11,12 @@
 }
 
 .qx-calendar button:focus {
-  -webkit-text-stroke: 1px $highlight-color;
+  -webkit-text-stroke: rem(1) $highlight-color;
   color: $highlight-color;
 }
 
 .qx-calendar thead {
-  border-width: 1px;
+  border-width: rem(1);
   border-style: solid;
   border-color: $border-color;
   font-weight: bold;
@@ -44,12 +44,12 @@
 }
 
 .qx-calendar thead td {
-  padding: 2px 6px;
+  padding: rem(2) rem(6);
   width: 14.3%;
 }
 
 .qx-calendar td {
-  border-width: 1px;
+  border-width: rem(1);
   border-style: solid;
   border-color: $border-color;
   background-color: $background-color;
