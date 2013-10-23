@@ -30,6 +30,10 @@
   padding: 8px 12px;
 }
 
+.qx-tab-button > button[disabled] {
+  color: $highlight-color-disabled;
+}
+
 .qx-tab-button > button:focus {
   text-decoration: underline;
 }
