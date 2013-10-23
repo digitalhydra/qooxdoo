@@ -34,33 +34,64 @@ q.ready(function() {
     }
   };
 
+  var demosToLoad;
+  var loadedDemos;
   var loadDemos = function(category) {
+    loadedDemos = {};
+    demosToLoad = 0;
     demos[category] && demos[category].forEach(function(title) {
       loadDemo(category, title);
     });
   };
 
 
+  /**
+   * Load the requested demo file and prepare the content
+   * @param category {String} The demo's category (see the demos map)
+   * @param title {String} The demo's title (see the demos map)
+   */
   var loadDemo = function(category, title) {
+    demosToLoad++;
     var url = "demo/" + category + "/" + title + ".html";
     q.io.xhr(url).on("load", function(xhr) {
       if (xhr.status == 200) {
-        var pageSelector = q("#content").find("> ul > .qx-tab-button-active").getData("qxTabPage");
-        var demoCell = createDemoCell(title, xhr.responseText);
-        q(pageSelector).getChildren(".demo-container").append(demoCell);
-
-        var scripts = q.$$qx.bom.Html.extractScripts([demoCell[0]]);
-        scripts.forEach(function(script) {
-          eval(script.innerHTML);
-        });
+        loadedDemos[title] = createDemoCell(title, xhr.responseText);
+        demosToLoad--;
+        if (demosToLoad === 0) {
+          appendDemos(category);
+        }
       }
       else {
-        console.error("Could not load demo: ", xhr.status, xhr.statusText);
+        console && console.error("Could not load demo: ", xhr.status, xhr.statusText);
       }
     }).send();
   };
 
 
+  /**
+   * Append each previously loaded demo to the page and executes the
+   * demo code
+   * @param category {String} The category of the demos (see demos map)
+   */
+  var appendDemos = function(category) {
+    var pageSelector = q("#content").find("> ul > .qx-tab-button-active").getData("qxTabPage");
+
+    demos[category].forEach(function(title) {
+      var demoCell = loadedDemos[title];
+      q(pageSelector).getChildren(".demo-container").append(demoCell);
+      var scripts = q.$$qx.bom.Html.extractScripts([demoCell[0]]);
+      scripts.forEach(function(script) {
+        eval(script.innerHTML);
+      });
+    });
+  };
+
+
+  /**
+   * Create the DOM structure for a demo and the box showing the demo's code
+   * @param demoTitle {String} The demo's title (see the demos map)
+   * @param demoCode {String} The demo's JavaScript code
+   */
   var createDemoCell = function(demoTitle, demoCode) {
     var demoCell = q.create("<div class='demo-cell'>").setHtml(demoCode);
     q.create("<h2>" + demoTitle + "</h2>").insertBefore(demoCell.getChildren().getFirst());
@@ -92,33 +123,6 @@ q.ready(function() {
     loadDemos(demoName);
   };
 
-  var parseDemoCode = function(code) {
-    code = code.replace(/<h2.*?<\/h2>/g, "");
-
-    code = code.split("\n").filter(function(item) {
-      return !!item.match(/\S/);
-    }).join("\n");
-
-    return code;
-  };
-
-
-  window.widgetbrowser = {};
-  widgetbrowser.showCode = function(selector) {
-    if ((q.env.get("engine.name") == "mshtml" && q.env.get("browser.documentmode") < 9)) {
-      return;
-    }
-    q(selector + " .demo-cell")._forEachElementWrapped(function(demo) {
-      var demoHtml = demo.getProperty("demoCode");
-
-      q.create("<h2>Demo Code</h2>").appendTo(demo);
-      pre = q.create("<pre class='demo-cell html'></pre>");
-      q.create("<code>").appendTo(pre)[0].appendChild(document.createTextNode(demoHtml));
-
-      pre.appendTo(demo);
-      hljs.highlightBlock(pre[0]);
-    });
-  };
 
   qxWeb.initWidgets();
 
