@@ -134,9 +134,7 @@ qx.Bootstrap.define("qx.ui.website.Rating", {
      * Removes the keydown listener if the widget loses focus
      */
     _onBlur : function(e) {
-      if (this.contains(e.getRelatedTarget()).length === 0) {
-        qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
-      }
+      qxWeb(document.documentElement).off("keydown", this._onKeyDown, this);
     },
 
 
