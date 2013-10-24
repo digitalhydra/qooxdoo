@@ -93,14 +93,24 @@ q.ready(function() {
    * @param demoCode {String} The demo's JavaScript code
    */
   var createDemoCell = function(demoTitle, demoCode) {
-    var demoCell = q.create("<div class='demo-cell'>").setHtml(demoCode);
+    var legacyIe = (q.env.get("engine.name") === "mshtml" &&
+      q.env.get("engine.version") < 9);
+
+    demoHtml = legacyIe ? "_" + demoCode : demoCode;
+    var demoCell = q.create("<div class='demo-cell'>").setHtml(demoHtml);
+    if (legacyIe) {
+      // IE 8 will ignore script tags when setting innerHTML unless they are
+      // preceded by a "visible" node (i.e. containing text)
+      demoCell[0].removeChild(demoCell[0].firstChild);
+    }
     q.create("<h2>" + demoTitle + "</h2>").insertBefore(demoCell.getChildren().getFirst());
 
     q.create("<p class='code-header'>Demo Code</p>").appendTo(demoCell);
     pre = q.create("<pre class='demo-cell html'></pre>");
     q.create("<code>").appendTo(pre)[0].appendChild(document.createTextNode(demoCode));
     pre.appendTo(demoCell);
-    if (q.env.get("engine.name") === "mshtml" && q.env.get("engine.version") > 8) {
+    if (q.env.get("engine.name") !== "mshtml" ||
+      q.env.get("engine.version") > 8) {
       hljs.highlightBlock(pre[0]);
     }
 
