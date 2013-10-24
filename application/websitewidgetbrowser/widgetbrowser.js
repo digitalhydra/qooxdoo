@@ -100,7 +100,9 @@ q.ready(function() {
     pre = q.create("<pre class='demo-cell html'></pre>");
     q.create("<code>").appendTo(pre)[0].appendChild(document.createTextNode(demoCode));
     pre.appendTo(demoCell);
-    hljs.highlightBlock(pre[0]);
+    if (q.env.get("engine.name") === "mshtml" && q.env.get("engine.version") > 8) {
+      hljs.highlightBlock(pre[0]);
+    }
 
     return demoCell;
   };
